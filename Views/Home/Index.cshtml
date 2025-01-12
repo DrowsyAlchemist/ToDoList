@@ -1,0 +1,56 @@
+﻿@using ToDoList.Models
+@model IEnumerable<TaskModel>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>ToDoList</title>
+
+    <style>
+        td {
+            padding: 15px;
+        }
+
+        h2, p {
+            padding: 10px 40px;
+        }
+    </style>
+</head>
+<body>
+    <h2 style="display: inline">Список дел</h2>
+    <span><a href="/Home/CreateTask">Добавить</a></span>
+
+    @if (Model == null || Model.Count() == 0)
+    {
+        <p>У вас нет дел</p>
+    }
+    else
+    {
+        <table>
+            <tr>
+                <td>Id</td>
+                <td>Lable</td>
+                <td>Date</td>
+                <td>Status</td>
+                <td>Priority</td>
+                <td>Description</td>
+            </tr>
+            @foreach (var task in Model)
+            {
+                <tr>
+                    <td>@task.Id</td>
+                    <td>@task.Lable</td>
+                    <td>@task.ExpiresDate</td>
+                    <td>@task.Status</td>
+                    <td>@task.Priority</td>
+                    <td>@task.Description</td>
+                    <td><a href="/Home/EditTask">Изменить</a></td>
+                    <td><a href="/Home/DeleteTask/?Id=@task.Id">Удалить</a></td>
+                </tr>
+            }
+        </table>
+    }
+
+</body>
+</html>

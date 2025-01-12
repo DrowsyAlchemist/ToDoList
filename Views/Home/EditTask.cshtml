@@ -1,0 +1,62 @@
+﻿@using ToDoList.Models
+@model TaskModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>ToDoList</title>
+
+    <style>
+        td {
+            padding: 15px;
+        }
+
+        h2, p {
+            padding: 10px 40px;
+        }
+
+        div {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    @if (Model == null)
+    {
+        <h2 style="display: inline">Меню создания</h2>
+    }
+    else
+    {
+        <h2 style="display: inline">Меню редактирования</h2>
+    }
+
+    <form method="post" style="margin:15px 10px">
+        <div>
+            <label>Id:</label><br />
+            <input name="id" disabled="disabled" value="@Model.Id" /><br />
+        </div>
+        <div>
+            <label>Lable:</label><br />
+            <input name="lable" value="@Model.Lable" /><br />
+        </div>
+        <div>
+            <label>Date:</label><br />
+            <input name="expiresDate" type="datetime" value="@Model.ExpiresDate" /><br />
+        </div>
+        <div>
+            <label>Status:</label><br />
+            @Html.DropDownList("status", Html.GetEnumSelectList(typeof(Status)))<br />
+        </div>
+        <div>
+            <label>Priority:</label><br />
+            @Html.DropDownList("priority", Html.GetEnumSelectList(typeof(Priority)))<br />
+        </div>
+        <div>
+            <label>Description:</label><br />
+            <input name="description" type="text" /><br />
+        </div>
+        <input type="submit" />
+    </form>
+</body>
+</html>

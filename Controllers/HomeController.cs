@@ -1,17 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 using ToDoList.Models;
 
 namespace ToDoList.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly List<TaskModel> _tasks =
-          [
-              new TaskModel(){Id="1", Lable="Англ", Status=Status.Active, ExpiresDate=DateTime.Now, Description="Meow"},
-            new TaskModel(){Id="2", Lable="Японский", Status=Status.Pending, ExpiresDate=DateTime.Now, Description="Meow"},
-            new TaskModel(){Id="3", Lable="Прогать", Status=Status.Done, ExpiresDate=DateTime.Now, Description="Meow"}
-          ];
+        private List<TaskModel> _tasks => MockTaskRepository.Tasks;
 
         public IActionResult Index()
         {
@@ -35,7 +29,11 @@ namespace ToDoList.Controllers
             else
             {
                 var oldTask = _tasks.Find(t => t.Id == task.Id);
-                oldTask = task;
+                oldTask.Lable=task.Lable;
+                oldTask.Status = task.Status;
+                oldTask.ExpiresDate = task.ExpiresDate;
+                oldTask.Description = task.Description;
+                oldTask.Priority = task.Priority;
             }
             return RedirectToAction("Index");
         }

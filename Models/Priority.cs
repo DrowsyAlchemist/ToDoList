@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace ToDoList.Models
+﻿namespace ToDoList.Models
 {
     public enum Priority
     {

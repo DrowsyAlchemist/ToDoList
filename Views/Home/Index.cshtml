@@ -18,34 +18,18 @@
     </style>
 </head>
 <body>
-    <h2 style="display: inline">Список дел</h2>
-    <span><a href="/Home/CreateTask">Добавить</a></span>
+    <p>
+        <a href="/Profile/Index">Profile</a>
+    </p>
+    <h2 style="display: inline">To Do List</h2>
+    <span><a href="/Home/CreateTask">Add</a></span>
 
     @if (Model == null || Model.Count() == 0)
     {
-        <p>У вас нет дел</p>
+        <p>You haven't got anything to do.</p>
     }
     else
     {
-
-
-        //   ActionName — имя действия(в данном случае — Index). 2
-        // ControllerName — имя контроллера(в данном случае — Home). 2
-        // FormMethod — метод формы(GET или POST). В данном случае будет установлен POST. 2
-        @*   @foreach (var task in Model)
-    {
-    <form method="post" action="/Home/EditTask" style="margin:25px">
-    <span>@task.Id</span>
-    <span>@task.Lable</span>
-    <span>@task.ExpiresDate</span>
-    <span>@task.Status</span>
-    <span>@task.Priority</span>
-    <span>@task.Description</span>
-    <input type="submit" value="Редактировать" />
-    <input type="button" action="/Home/DeleteTask/?Id=@task.Id" value="Удалить" />
-    @Html.ActionLink("Изменить", "EditTask", "Home", new { Id = task.Id });
-    </form>
-    } *@
         <table>
             <tr>
                 <td>Id</td>
@@ -66,7 +50,7 @@
                     <td>@task.Priority</td>
                     <td>@task.Description</td>
                     <td>
-                        @Html.ActionLink("Изменить", "EditTask", "Home", new
+                        @Html.ActionLink("Edit", "EditTask", "Home", new
                             {
                                 Id = task.Id,
                                 Lable = task.Lable,
@@ -74,9 +58,9 @@
                                 Status = task.Status,
                                 Priority = task.Priority,
                                 Description = task.Description
-                            });
+                            })
                     </td>
-                    <td>@Html.ActionLink("Удалить", "EditTask", "Home", new { Id = task.Id })</td>
+                    <td>@Html.ActionLink("Delete", "DeleteTask", "Home", new { Id = task.Id })</td>
                 </tr>
             }
         </table>

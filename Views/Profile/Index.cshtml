@@ -1,0 +1,43 @@
+﻿@using ToDoList.Models
+@model UserModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>ToDoList</title>
+
+    <style>
+
+    </style>
+</head>
+
+<body>
+    @using (Html.BeginForm())
+    {
+        <p>
+            @Html.LabelFor(m => m.Id)
+            @Html.EditorFor(m => m.Id)
+        </p>
+        <p>
+            @Html.LabelFor(m => m.Name)
+            @Html.EditorFor(m => m.Name)
+        </p>
+        <p>
+            @Html.LabelFor(m => m.LoginData.Email)
+            @Html.EditorFor(m => m.LoginData.Email)
+        </p>
+        <p>
+            @Html.LabelFor(m => m.LoginData.Password)
+            @Html.EditorFor(m => m.LoginData.Password)
+        </p>
+        <p>
+            @Html.LabelFor(m => m.Avatar)
+            @Html.EditorFor(m => m.Avatar)
+        </p>
+        <p>
+            <input type="submit" value="Save" />
+        </p>
+    }
+</body>
+</html>

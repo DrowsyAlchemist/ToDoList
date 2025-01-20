@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using ToDoList.Models;
 
 namespace ToDoList.Controllers
@@ -12,29 +13,33 @@ namespace ToDoList.Controllers
             return View(_tasks);
         }
 
-        [Route("Home/EditTask")]
-        [Route("Home/CreateTask")]
         public IActionResult EditTask(TaskModel? task)
         {
             return View(task);
         }
 
-        public IActionResult SaveTask(TaskModel task)
+        public IActionResult CreateTask()
         {
-            if (task.Id == null)
-            {
-                task.Id = "new";
-                _tasks.Add(task);
-            }
-            else
-            {
-                var oldTask = _tasks.Find(t => t.Id == task.Id);
-                oldTask.Lable=task.Lable;
-                oldTask.Status = task.Status;
-                oldTask.ExpiresDate = task.ExpiresDate;
-                oldTask.Description = task.Description;
-                oldTask.Priority = task.Priority;
-            }
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult CreateTask(TaskModel task)
+        {
+            task.Id = (_tasks.Count + 1).ToString();
+            _tasks.Add(task);
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult UpdateTask(TaskModel task)
+        {
+            var oldTask = _tasks.Find(t => t.Id == task.Id);
+            oldTask.Lable = task.Lable;
+            oldTask.Status = task.Status;
+            oldTask.ExpiresDate = task.ExpiresDate;
+            oldTask.Description = task.Description;
+            oldTask.Priority = task.Priority;
             return RedirectToAction("Index");
         }
 

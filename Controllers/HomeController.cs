@@ -1,16 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
+using ToDoList.DataBase;
 using ToDoList.Models;
 
 namespace ToDoList.Controllers
 {
     public class HomeController : Controller
     {
-        private List<TaskModel> _tasks => MockTaskRepository.Tasks;
+        private readonly TaskRepository _tasks;
 
-        public IActionResult Index()
+        public HomeController(TaskRepository taskRepository)
         {
-            return View(_tasks);
+            _tasks = taskRepository;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            List<TaskModel> tasks = await _tasks.GetAll(); 
+            return View(tasks);
         }
 
         public IActionResult EditTask(TaskModel? task)
@@ -24,29 +30,22 @@ namespace ToDoList.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateTask(TaskModel task)
+        public async Task<IActionResult> CreateTask(TaskModel task)
         {
-            task.Id = (_tasks.Count + 1).ToString();
-            _tasks.Add(task);
+            await _tasks.AddTask(task);
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public IActionResult UpdateTask(TaskModel task)
+        public async Task<IActionResult> UpdateTask(TaskModel task)
         {
-            var oldTask = _tasks.Find(t => t.Id == task.Id);
-            oldTask.Lable = task.Lable;
-            oldTask.Status = task.Status;
-            oldTask.ExpiresDate = task.ExpiresDate;
-            oldTask.Description = task.Description;
-            oldTask.Priority = task.Priority;
+            await _tasks.UpdateTask(task);
             return RedirectToAction("Index");
         }
 
-        public IActionResult DeleteTask(TaskModel task)
+        public async Task<IActionResult> DeleteTask(TaskModel task)
         {
-            var taskIndex = _tasks.FindIndex(t => t.Id == task.Id);
-            _tasks.RemoveAt(taskIndex);
+            await _tasks.DeleteTask(task);
             return RedirectToAction("Index");
         }
     }

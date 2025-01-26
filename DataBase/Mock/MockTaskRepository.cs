@@ -1,4 +1,6 @@
-﻿namespace ToDoList.Models
+﻿using ToDoList.Models;
+
+namespace ToDoList.DataBase.Mock
 {
     public class MockTaskRepository
     {

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ToDoList.DataBase;
-using ToDoList.DataBase.Mock;
 using ToDoList.Models;
 
 namespace ToDoList.Controllers

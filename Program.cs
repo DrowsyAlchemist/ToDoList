@@ -16,11 +16,13 @@ builder.Services.AddTransient<TaskRepository>();
 builder.Services.AddTransient<UserRepository>();
 
 
-builder.Services.AddSingleton<AppLogger>();
+builder.Services.AddSingleton<AppLogger>(); // Логгирование
 
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment()) // Обработка ошибок
+    app.UseDeveloperExceptionPage();
 
 app.MapControllerRoute(
     name: "default",

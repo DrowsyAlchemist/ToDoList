@@ -36,6 +36,7 @@ namespace ToDoList.DataBase
 
         public async Task<UserModel> AddUser(UserModel user)
         {
+            ArgumentNullException.ThrowIfNull(user);
             user.Id = Guid.NewGuid().ToString();
             await _users.AddAsync(user);
             await _context.SaveChangesAsync();
@@ -44,7 +45,8 @@ namespace ToDoList.DataBase
 
         public async Task<UserModel> UpdateUser(UserModel user)
         {
-            var oldUser = await _users.FirstOrDefaultAsync(u => u.Id.Equals(user.Id));
+            ArgumentNullException.ThrowIfNull(user);
+            var oldUser = await GetById(user.Id);
             oldUser.Name = user.Name;
             oldUser.Avatar = user.Avatar;
             oldUser.LoginData.Email = user.LoginData.Email;
@@ -55,8 +57,8 @@ namespace ToDoList.DataBase
 
         public async Task<UserModel> DeleteUser(UserModel user)
         {
-            var userToRemove = await _users.FirstOrDefaultAsync();
-
+            ArgumentNullException.ThrowIfNull(user);
+            var userToRemove = await GetById(user.Id);
             _users.Remove(userToRemove);
             await _context.SaveChangesAsync();
             return userToRemove;

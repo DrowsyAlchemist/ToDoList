@@ -8,10 +8,12 @@ namespace ToDoList.Controllers
     public class HomeController : Controller
     {
         private readonly TaskRepository _tasks;
+        private readonly AppLogger _logger;
 
-        public HomeController(TaskRepository taskRepository)
+        public HomeController(TaskRepository taskRepository, AppLogger appLogger)
         {
             _tasks = taskRepository;
+            _logger = appLogger;
         }
 
         public async Task<IActionResult> Index()
@@ -20,9 +22,9 @@ namespace ToDoList.Controllers
             return View(tasks);
         }
 
-        public IActionResult EditTask(TaskModel task, AppLogger appLogger)
+        public IActionResult EditTask(TaskModel task)
         {
-            ValidateTask(() => (task == null || string.IsNullOrEmpty(task.Id)), appLogger);
+            ValidateTask(() => (task == null || string.IsNullOrEmpty(task.Id)));
             return View(task);
         }
 
@@ -32,33 +34,33 @@ namespace ToDoList.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateTask(TaskModel task, AppLogger appLogger)
+        public async Task<IActionResult> CreateTask(TaskModel task)
         {
-            ValidateTask(() => (task == null), appLogger);
+            ValidateTask(() => (task == null));
             await _tasks.AddTask(task);
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateTask(TaskModel task, AppLogger appLogger)
+        public async Task<IActionResult> UpdateTask(TaskModel task)
         {
-            ValidateTask(() => (task == null || string.IsNullOrEmpty(task.Id)), appLogger);
+            ValidateTask(() => (task == null || string.IsNullOrEmpty(task.Id)));
             await _tasks.UpdateTask(task);
             return RedirectToAction("Index");
         }
 
-        public async Task<IActionResult> DeleteTask(TaskModel task, AppLogger appLogger)
+        public async Task<IActionResult> DeleteTask(TaskModel task)
         {
-            ValidateTask(() => (task == null || string.IsNullOrEmpty(task.Id)), appLogger);
+            ValidateTask(() => (task == null || string.IsNullOrEmpty(task.Id)));
             await _tasks.DeleteTask(task);
             return RedirectToAction("Index");
         }
 
-        private void ValidateTask(Func<bool> condition, AppLogger appLogger)
+        private void ValidateTask(Func<bool> condition)
         {
             if (condition.Invoke())
             {
-                appLogger.LogError("Task is null or incorrect.");
+                _logger.LogError("Task is null or incorrect.");
                 throw new ArgumentNullException("Task");
             }
         }

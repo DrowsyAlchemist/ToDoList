@@ -31,6 +31,7 @@ namespace ToDoList.DataBase
 
         public async Task<TaskModel> AddTask(TaskModel task)
         {
+            ArgumentNullException.ThrowIfNull(task);
             task.Id = Guid.NewGuid().ToString();
             await _tasks.AddAsync(task);
             await _context.SaveChangesAsync();
@@ -39,7 +40,12 @@ namespace ToDoList.DataBase
 
         public async Task<TaskModel> UpdateTask(TaskModel task)
         {
+            ArgumentNullException.ThrowIfNull(task);
             var oldTask = await _tasks.FirstOrDefaultAsync(t => t.Id.Equals(task.Id));
+
+            if (task == null)
+                throw new InvalidOperationException("Задача не найдена.");
+
             oldTask.Lable = task.Lable;
             oldTask.Status = task.Status;
             oldTask.ExpiresDate = task.ExpiresDate;
@@ -51,7 +57,11 @@ namespace ToDoList.DataBase
 
         public async Task<TaskModel> DeleteTask(TaskModel task)
         {
+            ArgumentNullException.ThrowIfNull(task);
             var taskToRemove = await _tasks.FirstOrDefaultAsync();
+
+            if (taskToRemove == null)
+                throw new InvalidOperationException("Задача не найдена.");
 
             _tasks.Remove(taskToRemove);
             await _context.SaveChangesAsync();

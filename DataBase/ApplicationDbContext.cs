@@ -48,22 +48,6 @@ namespace ToDoList.DataBase
                 });
             });
 
-
-            //modelBuilder.Entity<UserModel>().HasData(
-            //    new UserModel()
-            //    {
-            //        Id = Guid.NewGuid().ToString(),
-            //        Name = "Michael",
-            //        LoginData = new LoginData() { Email = "michael@gmail.com", Password = "1234" }
-            //    },
-            //    new UserModel()
-            //    {
-            //        Id = Guid.NewGuid().ToString(),
-            //        Name = "Bob",
-            //        LoginData = new LoginData() { Email = "bob@gmail.com", Password = "12345" }
-            //    }
-            //);
-
             modelBuilder.Entity<TaskModel>().HasData(
                 new TaskModel()
                 {

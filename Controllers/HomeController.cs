@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ToDoList.DataBase;
+using ToDoList.Logger;
 using ToDoList.Models;
 
 namespace ToDoList.Controllers
@@ -13,8 +14,9 @@ namespace ToDoList.Controllers
             _tasks = taskRepository;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(AppLogger logger)
         {
+            logger.LogInfo("Meow");
             List<TaskModel> tasks = await _tasks.GetAll(); 
             return View(tasks);
         }

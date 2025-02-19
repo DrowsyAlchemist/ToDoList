@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ToDoList.DataBase;
 using ToDoList.Logger;
 using ToDoList.Models;
@@ -16,24 +17,28 @@ namespace ToDoList.Controllers
             _logger = appLogger;
         }
 
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             List<TaskModel> tasks = await _tasks.GetAll();
             return View(tasks);
         }
 
+        [Authorize]
         public IActionResult EditTask(TaskModel task)
         {
             ValidateTask(() => (task == null || string.IsNullOrEmpty(task.Id)));
             return View(task);
         }
 
+        [Authorize]
         public IActionResult CreateTask()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateTask(TaskModel task)
         {
             ValidateTask(() => (task == null));
@@ -42,6 +47,7 @@ namespace ToDoList.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> UpdateTask(TaskModel task)
         {
             ValidateTask(() => (task == null || string.IsNullOrEmpty(task.Id)));
@@ -49,6 +55,7 @@ namespace ToDoList.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize]
         public async Task<IActionResult> DeleteTask(TaskModel task)
         {
             ValidateTask(() => (task == null || string.IsNullOrEmpty(task.Id)));

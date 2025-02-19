@@ -18,14 +18,17 @@ namespace ToDoList.DataBase
             return await _users.FirstAsync();
         }
 
-        public async Task<UserModel> GetById(string id)
+        public async Task<UserModel?> GetById(string id)
         {
             ArgumentNullException.ThrowIfNull(id);
             var user = await _users.FirstOrDefaultAsync(u => u.Id.Equals(id));
+            return user;
+        }
 
-            if (user == null)
-                throw new InvalidOperationException("Пользователь не найден.");
-
+        public async Task<UserModel?> GetByEmail(string email)
+        {
+            ArgumentNullException.ThrowIfNull(email);
+            var user = await _users.FirstOrDefaultAsync(u => u.LoginData.Email.Equals(email));
             return user;
         }
 
@@ -47,6 +50,10 @@ namespace ToDoList.DataBase
         {
             ArgumentNullException.ThrowIfNull(user);
             var oldUser = await GetById(user.Id);
+
+            if(oldUser==null)
+                throw new InvalidOperationException("Пользователь не найден.");
+
             oldUser.Name = user.Name;
             oldUser.Avatar = user.Avatar;
             oldUser.LoginData.Email = user.LoginData.Email;
@@ -59,6 +66,10 @@ namespace ToDoList.DataBase
         {
             ArgumentNullException.ThrowIfNull(user);
             var userToRemove = await GetById(user.Id);
+
+            if (userToRemove == null)
+                throw new InvalidOperationException("Пользователь не найден.");
+
             _users.Remove(userToRemove);
             await _context.SaveChangesAsync();
             return userToRemove;

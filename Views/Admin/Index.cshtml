@@ -1,0 +1,62 @@
+﻿@using ToDoList.Models
+@using ToDoList.ViewModels
+@model AdminModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>AdminPage</title>
+
+    <style>
+    </style>
+</head>
+<body>
+    <h1>Admin Page</h1>
+
+    <h3>Users</h3>
+    <table>
+        <tr>
+            <td>Id</td>
+            <td>Name</td>
+            <td>Email</td>
+            <td>Avatar</td>
+        </tr>
+
+        @foreach (UserModel user in Model.Users)
+        {
+            <tr>
+                <td>@user.Id</td>
+                <td>@user.Name</td>
+                <td>@user.LoginData.Email</td>
+                <td>@user.Avatar</td>
+            </tr>
+        }
+    </table>
+
+    <h3>Tasks</h3>
+    <table>
+        <tr>
+            <td>Id</td>
+            <td>Lable</td>
+            <td>Date</td>
+            <td>Status</td>
+            <td>Priority</td>
+            <td>Description</td>
+        </tr>
+
+        @foreach (TaskModel task in Model.Tasks)
+        {
+            <tr>
+                <td>@task.Id</td>
+                <td>@task.Lable</td>
+                <td>@task.ExpiresDate</td>
+                <td>@task.Status</td>
+                <td>@task.Priority</td>
+                <td>@task.Description</td>
+            </tr>
+        }
+    </table>
+
+</body>
+</html>

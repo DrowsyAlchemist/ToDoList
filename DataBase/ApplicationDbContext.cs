@@ -23,6 +23,7 @@ namespace ToDoList.DataBase
                 {
                     Id = id,
                     Name = "Michael",
+                    Role = Role.Admin,
                 });
                 b.OwnsOne(u => u.LoginData).HasData(new
                 {
@@ -39,6 +40,7 @@ namespace ToDoList.DataBase
                 {
                     Id = id,
                     Name = "Bob",
+                    Role = Role.User,
                 });
                 b.OwnsOne(u => u.LoginData).HasData(new
                 {

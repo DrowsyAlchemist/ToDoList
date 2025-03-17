@@ -56,7 +56,11 @@ namespace ToDoList.Controllers
                 _logger.LogWarning($"{loginData.Email} could not logged in. Password is incorrect.");
                 return LocalRedirect("/Login/Login");
             }
-            var claims = new List<Claim> { new Claim(ClaimTypes.Name, loginData.Email) };
+            var claims = new List<Claim> 
+            { 
+                new Claim(ClaimTypes.Name, loginData.Email) ,
+                new Claim(ClaimTypes.Role, userInDb.Role),
+            };
             // создаем объект ClaimsIdentity
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Cookies");
             // установка аутентификационных куки

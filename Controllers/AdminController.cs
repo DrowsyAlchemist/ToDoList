@@ -20,7 +20,7 @@ namespace ToDoList.Controllers
             _logger = appLogger;
         }
 
-        [Authorize]
+        [Authorize(Roles = Role.Admin)]
         public async Task<IActionResult> Index()
         {
             List<UserModel> users = await _users.GetAll();

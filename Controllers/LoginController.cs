@@ -75,5 +75,13 @@ namespace ToDoList.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return LocalRedirect("/Login/Login");
         }
+
+        public IActionResult DenyAccess()
+        {
+            var user = HttpContext.User.Identity;
+            var path = HttpContext.Request.Path;
+            _logger.LogWarning($"Access denied.\nPath: {path}\nUser: {user?.Name}");
+            return View();
+        }
     }
 }

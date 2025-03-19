@@ -1,0 +1,45 @@
+﻿@model ToDoList.Models.UserModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>ToDoList</title>
+
+    <style>
+        td {
+            padding: 10px;
+        }
+
+        h2, p {
+            padding: 10px 40px;
+        }
+    </style>
+</head>
+<body>
+    <h2>SignUp Form</h2>
+
+    @using (Html.BeginForm("SignUp", "Login", FormMethod.Post))
+    {
+        <p>
+            @Html.LabelFor(m => m.Name, "Name")<br />
+            @Html.TextBoxFor(m => m.Name)
+        </p>
+        <p>
+            @Html.LabelFor(m => m.LoginData.Email, "Email")<br />
+            @Html.TextBoxFor(m => m.LoginData.Email, "", new { type = "email" })
+        </p>
+        <p>
+            @Html.LabelFor(m => m.LoginData.Password, "Password")<br />
+            @Html.TextBoxFor(m => m.LoginData.Password, "", new { type = "password" })
+        </p>
+        <p>
+            @Html.LabelFor(m => m.Avatar, "Avatar")<br />
+            @Html.TextBoxFor(m => m.Avatar)
+        </p>
+        <p>
+            <input type="submit" value="SignUp" />
+        </p>
+    }
+</body>
+</html>

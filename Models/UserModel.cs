@@ -2,10 +2,10 @@
 {
     public class UserModel
     {
-        public required string Id { get; set; }
+        public  string? Id { get; set; }
         public required string Name { get; set; }
         public required LoginData LoginData { get; set; }
-        public required string Role { get; set; }
+        public string? Role { get; set; }
         public string? Avatar { get; set; }
     }
 }

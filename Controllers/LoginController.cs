@@ -25,6 +25,11 @@ namespace ToDoList.Controllers
             return View();
         }
 
+        public IActionResult SignUp()
+        {
+            return View();
+        }
+
         [HttpPost]
         public async Task<IActionResult> Login(LoginData loginData)
         {
@@ -56,10 +61,61 @@ namespace ToDoList.Controllers
                 _logger.LogWarning($"{loginData.Email} could not logged in. Password is incorrect.");
                 return LocalRedirect("/Login/Login");
             }
-            var claims = new List<Claim> 
-            { 
+            var claims = new List<Claim>
+            {
                 new Claim(ClaimTypes.Name, loginData.Email) ,
                 new Claim(ClaimTypes.Role, userInDb.Role),
+            };
+            // создаем объект ClaimsIdentity
+            ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Cookies");
+            // установка аутентификационных куки
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity));
+            _logger.LogInfo($"{loginData.Email} has successfully logged in.");
+            return LocalRedirect("/Home/Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SignUp(UserModel userModel)
+        {
+            string form = "";
+            foreach (var item in Request.Form)
+            {
+                form += $"{item.Key} - {item.Value}\n";
+            }
+            _logger.LogWarning(form);
+            var loginData = userModel.LoginData;
+
+            if (loginData == null)
+            {
+                _logger.LogWarning("loginData is null.");
+                return View();
+            }
+            if (string.IsNullOrEmpty(loginData.Email))
+            {
+                _logger.LogWarning("Email is null or empty.");
+                return View();
+            }
+            if (string.IsNullOrEmpty(loginData.Password))
+            {
+                _logger.LogWarning("Password is null or empty.");
+                return View();
+            }
+            var userInDb = await _users.GetByEmail(loginData.Email);
+
+            if (userInDb != null)
+            {
+                _logger.LogWarning($"{loginData.Email} could not signed up. User already exists.");
+                return View();
+            }
+
+            userModel.Role = Role.User;
+            await _users.AddUser(userModel);
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, loginData.Email) ,
+                new Claim(ClaimTypes.Role, Role.User),
             };
             // создаем объект ClaimsIdentity
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Cookies");

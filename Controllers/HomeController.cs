@@ -8,19 +8,20 @@ namespace ToDoList.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly TaskRepository _tasks;
+        private readonly UserRepository _users;
         private readonly AppLogger _logger;
 
-        public HomeController(TaskRepository taskRepository, AppLogger appLogger)
+        public HomeController(UserRepository usersRepository, AppLogger appLogger)
         {
-            _tasks = taskRepository;
+            _users = usersRepository;
             _logger = appLogger;
         }
 
         [Authorize]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index()///////////////////////////////////////////////
         {
-            List<TaskModel> tasks = await _tasks.GetAll();
+            var currentUser = await GetCurrentUser();
+            var tasks = currentUser.Tasks;
             return View(tasks);
         }
 
@@ -42,7 +43,8 @@ namespace ToDoList.Controllers
         public async Task<IActionResult> CreateTask(TaskModel task)
         {
             ValidateTask(() => (task == null));
-            await _tasks.AddTask(task);
+            var user = await GetCurrentUser();
+            await _users.AddTask(task, user);
             return RedirectToAction("Index");
         }
 
@@ -51,7 +53,7 @@ namespace ToDoList.Controllers
         public async Task<IActionResult> UpdateTask(TaskModel task)
         {
             ValidateTask(() => (task == null || string.IsNullOrEmpty(task.Id)));
-            await _tasks.UpdateTask(task);
+            await _users.UpdateTask(task);
             return RedirectToAction("Index");
         }
 
@@ -59,8 +61,15 @@ namespace ToDoList.Controllers
         public async Task<IActionResult> DeleteTask(TaskModel task)
         {
             ValidateTask(() => (task == null || string.IsNullOrEmpty(task.Id)));
-            await _tasks.DeleteTask(task);
+            await _users.DeleteTask(task);
             return RedirectToAction("Index");
+        }
+
+        private async Task<UserModel> GetCurrentUser()
+        {
+            var userInApp = HttpContext.User.Identity;
+            var currentUser = await _users.GetByEmail(userInApp.Name);
+            return currentUser;
         }
 
         private void ValidateTask(Func<bool> condition)

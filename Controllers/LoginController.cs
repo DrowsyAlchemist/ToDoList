@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using System;
 using ToDoList.DataBase;
 using ToDoList.Logger;
 using ToDoList.Models;

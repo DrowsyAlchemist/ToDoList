@@ -57,10 +57,12 @@
                                 ExpiresDate = task.ExpiresDate,
                                 Status = task.Status,
                                 Priority = task.Priority,
-                                Description = task.Description
+                                Description = task.Description,
+                                UserId = task.UserId,
+                                User = task.User
                             })
                     </td>
-                    <td>@Html.ActionLink("Delete", "DeleteTask", "Home", new { Id = task.Id })</td>
+                    <td>@Html.ActionLink("Delete", "DeleteTask", "Home", new { Id = task.Id, UserId = task.UserId })</td>
                 </tr>
             }
         </table>

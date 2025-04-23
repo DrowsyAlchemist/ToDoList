@@ -31,54 +31,55 @@ namespace ToDoList.DataBase
                     Password = "1234",
                     UserModelId = id,
                 });
+                b.OwnsMany(u => u.Tasks);
+
+                //    modelBuilder.Entity<UserModel>(b =>
+                //    {
+                //        string id = Guid.NewGuid().ToString();
+                //        b.HasData(new
+                //        {
+                //            Id = id,
+                //            Name = "Bob",
+                //            Role = Role.User,
+                //        });
+                //        b.OwnsOne(u => u.LoginData).HasData(new
+                //        {
+                //            Email = "bob@gmail.com",
+                //            Password = "12345",
+                //            UserModelId = id,
+                //        });
+                //    });
+
+                //    modelBuilder.Entity<TaskModel>().HasData(
+                //        new TaskModel()
+                //        {
+                //            Id = Guid.NewGuid().ToString(),
+                //            Lable = "Англ",
+                //            Status = Status.Active,
+                //            Priority = Priority.Low,
+                //            ExpiresDate = DateTime.Now,
+                //            Description = "Meow"
+                //        },
+                //        new TaskModel()
+                //        {
+                //            Id = Guid.NewGuid().ToString(),
+                //            Lable = "Японский",
+                //            Status = Status.Pending,
+                //            Priority = Priority.Medium,
+                //            ExpiresDate = DateTime.Now,
+                //            Description = "Meow"
+                //        },
+                //        new TaskModel()
+                //        {
+                //            Id = Guid.NewGuid().ToString(),
+                //            Lable = "Прогать",
+                //            Status = Status.Done,
+                //            Priority = Priority.High,
+                //            ExpiresDate = DateTime.Now,
+                //            Description = "Meow"
+                //        }
             });
 
-            modelBuilder.Entity<UserModel>(b =>
-            {
-                string id = Guid.NewGuid().ToString();
-                b.HasData(new
-                {
-                    Id = id,
-                    Name = "Bob",
-                    Role = Role.User,
-                });
-                b.OwnsOne(u => u.LoginData).HasData(new
-                {
-                    Email = "bob@gmail.com",
-                    Password = "12345",
-                    UserModelId = id,
-                });
-            });
-
-            modelBuilder.Entity<TaskModel>().HasData(
-                new TaskModel()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Lable = "Англ",
-                    Status = Status.Active,
-                    Priority = Priority.Low,
-                    ExpiresDate = DateTime.Now,
-                    Description = "Meow"
-                },
-                new TaskModel()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Lable = "Японский",
-                    Status = Status.Pending,
-                    Priority = Priority.Medium,
-                    ExpiresDate = DateTime.Now,
-                    Description = "Meow"
-                },
-                new TaskModel()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Lable = "Прогать",
-                    Status = Status.Done,
-                    Priority = Priority.High,
-                    ExpiresDate = DateTime.Now,
-                    Description = "Meow"
-                }
-            );
         }
     }
 }

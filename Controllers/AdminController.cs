@@ -24,8 +24,7 @@ namespace ToDoList.Controllers
         public async Task<IActionResult> Index()
         {
             List<UserModel> users = await _users.GetAll();
-            List<TaskModel> tasks = await _tasks.GetAll();
-            return View(new AdminModel(users, tasks));
+            return View(new AdminModel(users));
         }
     }
 }

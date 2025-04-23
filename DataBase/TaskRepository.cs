@@ -13,22 +13,6 @@ namespace ToDoList.DataBase
             _context = context;
         }
 
-        public async Task<TaskModel> GetById(string id)
-        {
-            ArgumentNullException.ThrowIfNull(id);
-            var task = await _tasks.FirstOrDefaultAsync(t => t.Id.Equals(id));
-
-            if (task == null)
-                throw new InvalidOperationException("Пользователь не найден.");
-
-            return task;
-        }
-
-        public async Task<List<TaskModel>> GetAll()
-        {
-            return await _tasks.ToListAsync();
-        }
-
         public async Task<TaskModel> AddTask(TaskModel task)
         {
             ArgumentNullException.ThrowIfNull(task);

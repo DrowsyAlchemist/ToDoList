@@ -5,12 +5,10 @@ namespace ToDoList.ViewModels
     public class AdminModel
     {
         public List<UserModel> Users { get; private set; }
-        public List<TaskModel> Tasks { get; private set; }
 
-        public AdminModel(List<UserModel> users, List<TaskModel> tasks)
+        public AdminModel(List<UserModel> users)
         {
             Users = users;
-            Tasks = tasks;
         }
     }
 }

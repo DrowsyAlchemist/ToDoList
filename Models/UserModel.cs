@@ -1,4 +1,6 @@
-﻿namespace ToDoList.Models
+﻿using ToDoList.DataBase;
+
+namespace ToDoList.Models
 {
     public class UserModel
     {
@@ -7,5 +9,6 @@
         public required LoginData LoginData { get; set; }
         public string? Role { get; set; }
         public string? Avatar { get; set; }
+        public List<TaskModel> Tasks { get; set; }
     }
 }

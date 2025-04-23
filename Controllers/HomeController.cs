@@ -18,11 +18,10 @@ namespace ToDoList.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index()///////////////////////////////////////////////
+        public async Task<IActionResult> Index()
         {
             var currentUser = await GetCurrentUser();
-            var tasks = currentUser.Tasks;
-            return View(tasks);
+            return View(currentUser);
         }
 
         [Authorize]

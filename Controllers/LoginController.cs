@@ -135,7 +135,7 @@ namespace ToDoList.Controllers
         {
             var user = HttpContext.User.Identity;
             var path = HttpContext.Request.Path;
-            _logger.LogWarning($"Access denied.\nPath: {path}\nUser: {user?.Name}");
+            _logger.LogWarning($"Access denied.\nPath: {path}\nUser: {user?.Name}\nAdmin: {HttpContext.User.IsInRole(Role.Admin)}");
             return View();
         }
     }

@@ -1,0 +1,57 @@
+﻿@using ToDoList.Models
+@model UserModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>ToDoList</title>
+
+    <style>
+        td {
+            padding: 10px;
+        }
+
+        h2, p {
+            padding: 10px 40px;
+        }
+    </style>
+</head>
+<body>
+    <p>
+        <a href="/Profile/Index">Profile</a>
+    </p>
+    <h2 style="display: inline">To Do List</h2>
+
+    @if (Model == null || Model.Tasks.Count() == 0)
+    {
+        <p>User hasn't got any tasks.</p>
+    }
+    else
+    {
+        <table>
+            <tr>
+                <td>Id</td>
+                <td>Lable</td>
+                <td>Date</td>
+                <td>Status</td>
+                <td>Priority</td>
+                <td>Description</td>
+            </tr>
+
+            @foreach (var task in Model.Tasks)
+            {
+                <tr>
+                    <td>@task.Id</td>
+                    <td>@task.Lable</td>
+                    <td>@task.ExpiresDate</td>
+                    <td>@task.Status</td>
+                    <td>@task.Priority</td>
+                    <td>@task.Description</td>
+                </tr>
+            }
+        </table>
+    }
+
+</body>
+</html>

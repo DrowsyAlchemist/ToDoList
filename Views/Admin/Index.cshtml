@@ -32,6 +32,7 @@
                 <td>@user.LoginData.Email</td>
                 <td>@user.Role</td>
                 <td>@user.Avatar</td>
+                <td>@Html.ActionLink("View tasks", "ViewUserTasks", "Admin", new {Id = user.Id})</td>
             </tr>
         }
     </table>

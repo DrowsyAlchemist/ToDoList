@@ -55,11 +55,11 @@
         </div>
         <div>
             <label>Status:</label><br />
-            @Html.DropDownList("status", Html.GetEnumSelectList(typeof(Status)), Model?.Status.ToString())<br />
+            @Html.DropDownListFor(m => m.Status, Html.GetEnumSelectList(typeof(Status)))<br />
         </div>
         <div>
             <label>Priority:</label><br />
-            @Html.DropDownList("priority", Html.GetEnumSelectList(typeof(Priority)), Model?.Priority.ToString())<br />
+            @Html.DropDownListFor(m=>m.Priority, Html.GetEnumSelectList(typeof(Priority)))<br />
         </div>
         <div>
             <label>Description:</label><br />

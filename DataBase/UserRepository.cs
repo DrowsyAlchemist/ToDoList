@@ -89,8 +89,11 @@ namespace ToDoList.DataBase
 
         public async Task<TaskModel> UpdateTask(TaskModel task)
         {
+            ArgumentNullException.ThrowIfNull(task);
             var user = await _users.FirstOrDefaultAsync(u => u.Id.Equals(task.UserId));
+            ArgumentNullException.ThrowIfNull(user);
             var taskInDb = user.Tasks.FirstOrDefault(t => t.Id == task.Id);
+            ArgumentNullException.ThrowIfNull(taskInDb);
             taskInDb.Lable = task.Lable;
             taskInDb.Status = task.Status;
             taskInDb.ExpiresDate = task.ExpiresDate;
@@ -102,8 +105,11 @@ namespace ToDoList.DataBase
 
         public async Task<TaskModel> DeleteTask(TaskModel task)
         {
+            ArgumentNullException.ThrowIfNull(task);
             var user = await _users.FirstOrDefaultAsync(u => u.Id.Equals(task.UserId));
+            ArgumentNullException.ThrowIfNull(user);
             var taskToRemove = user.Tasks.FirstOrDefault(t => t.Id == task.Id);
+            ArgumentNullException.ThrowIfNull(taskToRemove);
             user.Tasks.Remove(taskToRemove);
             await _context.SaveChangesAsync();
             return task;

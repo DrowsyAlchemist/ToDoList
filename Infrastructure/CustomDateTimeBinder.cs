@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using ToDoList.Models;
 
 namespace ToDoList.Infrastructure
 {
@@ -13,26 +14,50 @@ namespace ToDoList.Infrastructure
 
         public Task BindModelAsync(ModelBindingContext bindingContext)
         {
-            var datePartValues = bindingContext.ValueProvider.GetValue("Date");
-            var timePartValues = bindingContext.ValueProvider.GetValue("Time");
+            var idPartValue = bindingContext.ValueProvider.GetValue("Id").FirstValue;
+            var lablePartValue = bindingContext.ValueProvider.GetValue("Lable").FirstValue;
+            var datePartValue = bindingContext.ValueProvider.GetValue("Date");
+            var timePartValue = bindingContext.ValueProvider.GetValue("Time");
+            var statusPartValue = bindingContext.ValueProvider.GetValue("Status").FirstValue;
+            var priorityPartValue = bindingContext.ValueProvider.GetValue("Priority").FirstValue;
+            var descriptionPartValue = bindingContext.ValueProvider.GetValue("Description").FirstValue;
+            var userIdPartValue = bindingContext.ValueProvider.GetValue("UserId").FirstValue;
 
-            if (datePartValues == ValueProviderResult.None || timePartValues == ValueProviderResult.None)
-                return fallbackBinder.BindModelAsync(bindingContext);
+            DateTime dateTime;
 
-            string? date = datePartValues.FirstValue;
-            string? time = timePartValues.FirstValue;
+            if (datePartValue == ValueProviderResult.None || timePartValue == ValueProviderResult.None)
+            {
+                datePartValue = bindingContext.ValueProvider.GetValue("ExpiresDate");
+                dateTime = DateTime.Parse(datePartValue.FirstValue);
+            }
+            else
+            {
+                string? date = datePartValue.FirstValue;
+                string? time = timePartValue.FirstValue;
 
-            DateTime.TryParse(date, out var parsedDateValue);
-            DateTime.TryParse(time, out var parsedTimeValue);
+                DateTime.TryParse(date, out var parsedDateValue);
+                DateTime.TryParse(time, out var parsedTimeValue);
 
-            var result = new DateTime(parsedDateValue.Year,
-                            parsedDateValue.Month,
-                            parsedDateValue.Day,
-                            parsedTimeValue.Hour,
-                            parsedTimeValue.Minute,
-                            parsedTimeValue.Second);
+                dateTime = new DateTime(parsedDateValue.Year,
+                                parsedDateValue.Month,
+                                parsedDateValue.Day,
+                                parsedTimeValue.Hour,
+                                parsedTimeValue.Minute,
+                                parsedTimeValue.Second);
+            }
 
-            bindingContext.Result = ModelBindingResult.Success(result);
+            var task = new TaskModel
+            {
+                Id = idPartValue,
+                Lable = lablePartValue,
+                ExpiresDate = dateTime,
+                Status = Enum.Parse<Status>(statusPartValue),
+                Priority = Enum.Parse<Priority>(priorityPartValue),
+                Description = descriptionPartValue,
+                UserId = userIdPartValue,
+            };
+
+            bindingContext.Result = ModelBindingResult.Success(task);
             return Task.CompletedTask;
         }
     }

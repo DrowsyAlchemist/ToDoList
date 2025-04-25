@@ -1,16 +1,17 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using ToDoList.DataBase;
+using ToDoList.Infrastructure;
 using ToDoList.Logger;
 using ToDoList.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
-//builder.Services.AddControllersWithViews(opts =>
-//{
-//    opts.ModelBinderProviders.Insert(0, new CustomDateTimeModelBinderProvider());
-//});
+builder.Services.AddControllersWithViews(opts =>
+{
+    opts.ModelBinderProviders.Insert(0, new CustomDateTimeModelBinderProvider());
+});
 
 string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
 

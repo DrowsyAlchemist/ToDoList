@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using ToDoList.Models;
 
 namespace ToDoList.Infrastructure
 {
@@ -9,7 +10,7 @@ namespace ToDoList.Infrastructure
         {
             ILoggerFactory loggerFactory = context.Services.GetRequiredService<ILoggerFactory>();
             IModelBinder binder = new CustomDateTimeModelBinder(new SimpleTypeModelBinder(typeof(DateTime), loggerFactory));
-            return context.Metadata.ModelType == typeof(DateTime) ? binder : null;
+            return context.Metadata.ModelType == typeof(TaskModel) ? binder : null;
         }
     }
 }

@@ -66,7 +66,19 @@
                                 User = task.User
                             })
                     </td>
-                    <td>@Html.ActionLink("Delete", "DeleteTask", "Home", new { Id = task.Id, UserId = task.UserId })</td>
+                    <td>
+                        @Html.ActionLink("Delete", "DeleteTask", "Home", new
+                            {
+                                Id = task.Id,
+                                Lable = task.Lable,
+                                ExpiresDate = task.ExpiresDate,
+                                Status = task.Status,
+                                Priority = task.Priority,
+                                Description = task.Description,
+                                UserId = task.UserId,
+                                User = task.User
+                            })
+                    </td>
                 </tr>
             }
         </table>

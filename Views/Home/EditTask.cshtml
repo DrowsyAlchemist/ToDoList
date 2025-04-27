@@ -7,8 +7,9 @@
 
     if (Model.ExpiresDate != null)
     {
-        expiresDate = Model.ExpiresDate.Value.ToShortDateString();
-        expiresTime = Model.ExpiresDate.Value.ToShortTimeString();
+        var date = Model.ExpiresDate.Value;
+        expiresDate = date.ToString("yyyy-MM-dd");
+        expiresTime = date.ToString("hh:mm");
     }
 }
 
@@ -46,7 +47,7 @@
         </div>
         <div>
             <label>Date:</label><br />
-            <input name="date" type="date" value=@expiresDate () /><br />
+            <input name="date" type="date" value="@expiresDate" /><br />
         </div>
         <div>
             <label>Time:</label><br />

@@ -17,6 +17,10 @@ namespace ToDoList.Infrastructure
         {
             var idPartValue = bindingContext.ValueProvider.GetValue("Id").FirstValue;
             var lablePartValue = bindingContext.ValueProvider.GetValue("Lable").FirstValue;
+
+            if (string.IsNullOrEmpty(lablePartValue))
+                return Task.CompletedTask;
+
             var statusPartValue = bindingContext.ValueProvider.GetValue("Status").FirstValue;
             var priorityPartValue = bindingContext.ValueProvider.GetValue("Priority").FirstValue;
             var descriptionPartValue = bindingContext.ValueProvider.GetValue("Description").FirstValue;

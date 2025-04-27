@@ -54,30 +54,10 @@
                     <td>@task.Priority</td>
                     <td>@task.Description</td>
                     <td>
-                        @Html.ActionLink("Edit", "EditTask", "Home", new
-                            {
-                                Id = task.Id,
-                                Lable = task.Lable,
-                                ExpiresDate = task.ExpiresDate,
-                                Status = task.Status,
-                                Priority = task.Priority,
-                                Description = task.Description,
-                                UserId = task.UserId,
-                                User = task.User
-                            })
+                        @Html.ActionLink("Edit", "EditTask", "Home", task);
                     </td>
                     <td>
-                        @Html.ActionLink("Delete", "DeleteTask", "Home", new
-                            {
-                                Id = task.Id,
-                                Lable = task.Lable,
-                                ExpiresDate = task.ExpiresDate,
-                                Status = task.Status,
-                                Priority = task.Priority,
-                                Description = task.Description,
-                                UserId = task.UserId,
-                                User = task.User
-                            })
+                        @Html.ActionLink("Delete", "DeleteTask", "Home", task);
                     </td>
                 </tr>
             }

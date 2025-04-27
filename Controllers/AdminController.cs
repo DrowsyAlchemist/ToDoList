@@ -31,5 +31,11 @@ namespace ToDoList.Controllers
             var userInDb = await _users.GetById(user.Id);
             return View(userInDb);
         }
+
+        public async Task<IActionResult> DeleteUser(UserModel user)
+        {
+            await _users.DeleteUser(user);
+            return RedirectToAction("Index");
+        }
     }
 }

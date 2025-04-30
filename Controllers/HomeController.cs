@@ -21,6 +21,17 @@ namespace ToDoList.Controllers
         public async Task<IActionResult> Index()
         {
             var currentUser = await GetCurrentUser();
+
+            int Compare(TaskModel a, TaskModel b)
+            {
+                if (a.ExpiresDate == null)
+                    return -1;
+                if (b.ExpiresDate == null)
+                    return 1;
+
+                return (int)(a.ExpiresDate - b.ExpiresDate).Value.TotalMinutes;
+            }
+            currentUser.Tasks.Sort(Compare);
             return View(currentUser);
         }
 

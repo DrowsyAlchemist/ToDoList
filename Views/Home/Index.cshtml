@@ -1,13 +1,6 @@
 ﻿@using ToDoList.Models
 @model UserModel
 
-@{
-    string method()
-    {
-        return "AAA";
-    }
-}
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -34,6 +27,15 @@
     </p>
     <h2 style="display: inline">To Do List</h2>
     <span><a href="/Home/CreateTask">Add</a></span>
+
+    <label>Scope:</label>
+    <br />
+    <select asp-action="Index">
+        <option asp-action="Index" > 1</option>
+    </select>
+    
+    <br />
+
 
     @if (Model == null || Model.Tasks.Count() == 0)
     {

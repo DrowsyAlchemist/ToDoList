@@ -49,14 +49,14 @@ namespace ToDoList.Infrastructure
             else if (string.IsNullOrEmpty(expiresDatePartValue.FirstValue) == false)
             {
                 string? expiresDate = expiresDatePartValue.FirstValue;
-                string pattern = "MM/dd/yyyy hh:mm:ss";
+                string pattern = "MM/dd/yyyy HH:mm:ss";
+                var date = DateTime.ParseExact(expiresDate, pattern, CultureInfo.InvariantCulture);
 
                 if (DateTime.TryParseExact(expiresDate, pattern, null, DateTimeStyles.None, out var parsedDateTimeValue))
                     Console.WriteLine("Converted '{0}' to {1} ({2}).", expiresDate,
                                       parsedDateTimeValue, parsedDateTimeValue.Kind);
                 else
                     Console.WriteLine("Unable to parse '{0}'.", expiresDate);
-
 
                 dateTime = parsedDateTimeValue;
             }

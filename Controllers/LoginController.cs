@@ -13,8 +13,11 @@ namespace ToDoList.Controllers
         private readonly UserRepository _users;
         private readonly AppLogger _logger;
 
-        public LoginController(UserRepository userRepository, AppLogger logger)
+        public LoginController(UserRepository userRepository, AppLogger logger, ApplicationDbContext db)
         {
+            if (db.Users.Any() == false)
+                InitDataBase(db);
+
             _users = userRepository;
             _logger = logger;
         }
@@ -137,6 +140,95 @@ namespace ToDoList.Controllers
             var path = HttpContext.Request.Path;
             _logger.LogWarning($"Access denied.\nPath: {path}\nUser: {user?.Name}\nAdmin: {HttpContext.User.IsInRole(Role.Admin)}");
             return View();
+        }
+
+        private void InitDataBase(ApplicationDbContext db)
+        {
+            LoginData user1LoginData = new LoginData
+            {
+                Email = "michael@gmail.com",
+                Password = "1234"
+            };
+
+            LoginData user2LoginData = new LoginData
+            {
+                Email = "bob@gmail.com",
+                Password = "12345"
+            };
+
+            UserModel user1 = new UserModel
+            {
+                Name = "Michael",
+                Role = Role.Admin,
+                LoginData = user1LoginData
+            };
+            UserModel user2 = new UserModel
+            {
+                Name = "Bob",
+                Role = Role.Admin,
+                LoginData = user2LoginData
+            };
+
+            TaskModel task1 = new TaskModel
+            {
+                Lable = "Учить англиский",
+                Status = Status.Active,
+                Priority = Priority.Low,
+                ExpiresDate = DateTime.Now + TimeSpan.FromDays(1),
+                User = user1
+            };
+            TaskModel task2 = new TaskModel
+            {
+                Lable = "Учить японский",
+                Status = Status.Pending,
+                Priority = Priority.Medium,
+                ExpiresDate = DateTime.Now + TimeSpan.FromDays(2),
+                User = user1
+            };
+            TaskModel task3 = new TaskModel
+            {
+                Lable = "Программировать",
+                Status = Status.Done,
+                Priority = Priority.High,
+                ExpiresDate = DateTime.Now + TimeSpan.FromHours(5),
+                User = user1
+            };
+            TaskModel task4 = new TaskModel
+            {
+                Lable = "Сделать зарядку",
+                Status = Status.Done,
+                Priority = Priority.Medium,
+                ExpiresDate = DateTime.Now + TimeSpan.FromHours(1),
+                User = user1
+            };
+            TaskModel task5 = new TaskModel
+            {
+                Lable = "Помыть посуду",
+                Status = Status.Pending,
+                Priority = Priority.Low,
+                ExpiresDate = DateTime.Now + TimeSpan.FromHours(7),
+                User = user1
+            };
+            TaskModel task6 = new TaskModel
+            {
+                Lable = "Приготовить ужин",
+                Status = Status.Cancelled,
+                Priority = Priority.Medium,
+                ExpiresDate = DateTime.Now + TimeSpan.FromSeconds(15),
+                User = user1
+            };
+            TaskModel task7 = new TaskModel
+            {
+                Lable = "Погулять с собакой",
+                Status = Status.Pending,
+                Priority = Priority.High,
+                ExpiresDate = DateTime.Now + TimeSpan.FromMinutes(35),
+                User = user1
+            };
+
+            db.Users.AddRange(user1, user2);
+            db.Tasks.AddRange(task1, task2, task3, task4, task5, task6, task7);
+            db.SaveChanges();
         }
     }
 }

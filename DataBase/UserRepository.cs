@@ -23,20 +23,30 @@ namespace ToDoList.DataBase
         public async Task<UserModel?> GetById(string id)
         {
             ArgumentNullException.ThrowIfNull(id);
-            var user = await _users.FirstOrDefaultAsync(u => u.Id.Equals(id));
+            var user = await _users
+                .Include(u => u.LoginData)
+                .Include(u => u.Tasks)
+                .FirstOrDefaultAsync(u => u.Id.Equals(id));
             return user;
         }
 
         public async Task<UserModel?> GetByEmail(string email)
         {
             ArgumentNullException.ThrowIfNull(email);
-            var user = await _users.FirstOrDefaultAsync(u => u.LoginData.Email.Equals(email));
+
+            var user = await _users
+                .Include(u => u.LoginData)
+                .Include(u => u.Tasks)
+                .FirstOrDefaultAsync(u => u.LoginData.Email.Equals(email));
             return user;
         }
 
         public async Task<List<UserModel>> GetAll()
         {
-            return await _users.ToListAsync();
+            return await _users
+                .Include(u => u.LoginData)
+                .Include(u => u.Tasks)
+                .ToListAsync();
         }
 
         public async Task<UserModel> AddUser(UserModel user)
@@ -90,7 +100,9 @@ namespace ToDoList.DataBase
         public async Task<TaskModel> UpdateTask(TaskModel task)
         {
             ArgumentNullException.ThrowIfNull(task);
-            var user = await _users.FirstOrDefaultAsync(u => u.Id.Equals(task.UserId));
+            var user = await _users
+                .Include(u => u.Tasks)
+                .FirstOrDefaultAsync(u => u.Id.Equals(task.UserId));
             ArgumentNullException.ThrowIfNull(user);
             var taskInDb = user.Tasks.FirstOrDefault(t => t.Id == task.Id);
             ArgumentNullException.ThrowIfNull(taskInDb);

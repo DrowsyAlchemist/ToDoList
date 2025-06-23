@@ -1,6 +1,6 @@
 ﻿namespace ToDoList.Models
 {
-    public enum Status
+    public enum TasksStatus
     {
         Active,
         Pending,

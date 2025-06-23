@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using ToDoList.DataBase;
 using ToDoList.Logger;
 using ToDoList.Models;
+using ToDoList.ViewModels;
 
 namespace ToDoList.Controllers
 {
@@ -19,8 +19,13 @@ namespace ToDoList.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+            FilterModel? filterModel = null,
+            SortState sortState = SortState.DueDateAsc,
+            int pageNumber = 0)
         {
+            /////////////////////////////////////////////////////////////////////////
+
             var currentUser = await GetCurrentUser();
 
             int Compare(TaskModel a, TaskModel b)
@@ -33,6 +38,14 @@ namespace ToDoList.Controllers
                 return (int)(a.ExpiresDate - b.ExpiresDate).Value.TotalMinutes;
             }
             currentUser.Tasks.Sort(Compare);
+
+            FilterViewModel filterViewModel = new FilterViewModel();
+            SortViewModel sortViewModel = new SortViewModel();
+            PageViewModel pageViewModel = new PageViewModel();
+
+
+            IndexViewModel indexViewModel = new IndexViewModel(currentUser, );
+
             return View(currentUser);
         }
 

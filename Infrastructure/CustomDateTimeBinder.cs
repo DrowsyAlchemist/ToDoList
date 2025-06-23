@@ -66,7 +66,7 @@ namespace ToDoList.Infrastructure
                 Id = idPartValue,
                 Lable = lablePartValue,
                 ExpiresDate = dateTime,
-                Status = Enum.Parse<Status>(statusPartValue),
+                Status = Enum.Parse<Models.TasksStatus>(statusPartValue),
                 Priority = Enum.Parse<Priority>(priorityPartValue),
                 Description = descriptionPartValue,
                 UserId = userIdPartValue,

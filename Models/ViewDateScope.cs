@@ -1,6 +1,6 @@
 ﻿namespace ToDoList.Models
 {
-    public enum ViewScope
+    public enum ViewDateScope
     {
         All,
         Today,

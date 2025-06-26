@@ -5,12 +5,12 @@
     string expiresDate = string.Empty;
     string expiresTime = string.Empty;
 
-    if (Model.ExpiresDate != null)
-    {
-        var date = Model.ExpiresDate.Value;
+   // if (Model.ExpiresDate != null)
+   // {
+        var date = Model.ExpiresDate;
         expiresDate = date.ToString("yyyy-MM-dd");
         expiresTime = date.ToString("hh:mm");
-    }
+  //  }
 }
 
 <!DOCTYPE html>

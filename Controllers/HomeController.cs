@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 using ToDoList.DataBase;
 using ToDoList.Logger;
 using ToDoList.Models;
@@ -27,7 +28,33 @@ namespace ToDoList.Controllers
             /////////////////////////////////////////////////////////////////////////
 
             var currentUser = await GetCurrentUser();
+            IEnumerable<TaskModel>? userTasks = currentUser.Tasks;
 
+            if (userTasks.Any() && filterModel != null)
+            {
+                if (string.IsNullOrEmpty(filterModel.LablePart) == false)
+                    userTasks = userTasks.Where(t => t.Lable.Contains(filterModel.LablePart));
+
+                if (filterModel.Status != null)
+                    userTasks = userTasks.Where(t => t.Status == filterModel.Status);
+
+                if (filterModel.Priority != null)
+                    userTasks = userTasks.Where(t => t.Priority == filterModel.Priority);
+
+                if (filterModel.ViewDateScope != ViewDateScope.All)
+                {
+                    var now = DateTime.Now;
+
+                    if (filterModel.ViewDateScope == ViewDateScope.Today)
+                        userTasks = userTasks.Where(t => t.ExpiresDate.Date == now.Date);
+
+                    if (filterModel.ViewDateScope == ViewDateScope.Tomorrow)
+                        userTasks = userTasks.Where(t => t.ExpiresDate.Date == now.AddDays(1));
+
+                    if (filterModel.ViewDateScope == ViewDateScope.ThisMonth)
+                        userTasks = userTasks.Where(t => (t.ExpiresDate.Year == now.Year) && (t.ExpiresDate.Month == now.Month));
+                }
+            }
             int Compare(TaskModel a, TaskModel b)
             {
                 if (a.ExpiresDate == null)
@@ -35,18 +62,18 @@ namespace ToDoList.Controllers
                 if (b.ExpiresDate == null)
                     return 1;
 
-                return (int)(a.ExpiresDate - b.ExpiresDate).Value.TotalMinutes;
+                return (int)(a.ExpiresDate - b.ExpiresDate).TotalMinutes;
             }
             currentUser.Tasks.Sort(Compare);
 
             FilterViewModel filterViewModel = new FilterViewModel();
-            SortViewModel sortViewModel = new SortViewModel();
-            PageViewModel pageViewModel = new PageViewModel();
+            SortViewModel sortViewModel = new SortViewModel(SortState.LableAsc);
+            PageViewModel pageViewModel = new PageViewModel(userTasks.Count(), 1, userTasks.Count());
 
 
-            IndexViewModel indexViewModel = new IndexViewModel(currentUser, );
+            IndexViewModel indexViewModel = new IndexViewModel(userTasks, pageViewModel, filterViewModel, sortViewModel);
 
-            return View(currentUser);
+            return View(indexViewModel);
         }
 
         [Authorize]

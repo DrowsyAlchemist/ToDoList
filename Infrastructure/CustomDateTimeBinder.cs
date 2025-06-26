@@ -29,7 +29,7 @@ namespace ToDoList.Infrastructure
             var datePartValue = bindingContext.ValueProvider.GetValue("Date");
             var timePartValue = bindingContext.ValueProvider.GetValue("Time");
             var expiresDatePartValue = bindingContext.ValueProvider.GetValue("ExpiresDate");
-            DateTime? dateTime = null;
+            DateTime dateTime = DateTime.Now;
 
             if (string.IsNullOrEmpty(datePartValue.FirstValue) == false)
             {

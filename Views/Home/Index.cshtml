@@ -1,5 +1,7 @@
 ﻿@using ToDoList.Models
-@model UserModel
+@using ToDoList.ViewModels
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model IndexViewModel
 
 <!DOCTYPE html>
 <html>
@@ -20,21 +22,15 @@
 <body>
     <p>
         <a href="/Profile/Index">Profile</a>
-        @if (Model.Role == Role.Admin)
+        <!--
+            if (Model.Role == Role.Admin)
         {
-            <a style="margin-left: 10px" href="/Admin/Index">Admin Page</a>
+           <a style="margin-left: 10px" href="/Admin/Index">Admin Page</a>
         }
+        -->
     </p>
     <h2 style="display: inline">To Do List</h2>
     <span><a href="/Home/CreateTask">Add</a></span>
-
-    <label>Scope:</label>
-    <br />
-    <select asp-action="Index">
-        <option asp-action="Index" > 1</option>
-    </select>
-    
-    <br />
 
 
     @if (Model == null || Model.Tasks.Count() == 0)
@@ -43,6 +39,22 @@
     }
     else
     {
+        <form method="get">
+            <label>Название: </label>
+            <input name="LablePart" value="@Model.FilterViewModel.LablePart" />
+
+            <label>Статус: </label>
+            <select name="Status" asp-items="@Model.FilterViewModel.Status" />
+
+            <label>Дата: </label>
+            <select name="ViewDateScope" asp-items="@Model.FilterViewModel.Data" />
+
+            <label>Приоритет: </label>
+            <select name="Priority" asp-items="Model.FilterViewModel.Priority"></select>
+
+            <input type="submit" value="Фильтр" />
+        </form>
+
         <table>
             <tr>
                 <td>Id</td>

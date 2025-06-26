@@ -7,6 +7,6 @@
         public LoginData LoginData { get; set; }
         public string? Role { get; set; }
         public string? Avatar { get; set; }
-        public List<TaskModel>? Tasks { get; set; }
+        public List<TaskModel> Tasks { get; set; } = new List<TaskModel>();
     }
 }

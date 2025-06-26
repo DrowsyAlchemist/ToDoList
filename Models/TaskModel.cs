@@ -4,7 +4,7 @@
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public required string Lable { get; set; }
-        public DateTime? ExpiresDate { get; set; }
+        public DateTime ExpiresDate { get; set; }
         public TasksStatus Status { get; set; }
         public Priority Priority { get; set; }
         public string? Description { get; set; }

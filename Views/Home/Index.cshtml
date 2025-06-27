@@ -32,6 +32,25 @@
     <h2 style="display: inline">To Do List</h2>
     <span><a href="/Home/CreateTask">Add</a></span>
 
+    <form method="get" style="display:inline">
+        <label>Название: </label>
+        <input asp-for="FilterViewModel.LablePart" value="@Model.FilterViewModel.LablePart" />
+
+        <label>Статус: </label>
+        <select asp-for="FilterViewModel.SelectedStatus" asp-items="@Model.FilterViewModel.Status"></select>
+
+        <label>Дата: </label>
+        <select asp-for="FilterViewModel.SelectedDateScope" asp-items="@Model.FilterViewModel.Data"></select>
+
+        <label>Приоритет: </label>
+        <select asp-for="FilterViewModel.SelectedPriority" asp-items="Model.FilterViewModel.Priority"></select>
+
+        <input type="submit" value="Apply" />
+    </form>
+
+    <form method="get" style="display:inline">
+        <input type="submit" value="Reset" />
+    </form>
 
     @if (Model == null || Model.Tasks.Count() == 0)
     {
@@ -39,22 +58,6 @@
     }
     else
     {
-        <form method="get">
-            <label>Название: </label>
-            <input name="LablePart" value="@Model.FilterViewModel.LablePart" />
-
-            <label>Статус: </label>
-            <select name="Status" asp-items="@Model.FilterViewModel.Status" />
-
-            <label>Дата: </label>
-            <select name="ViewDateScope" asp-items="@Model.FilterViewModel.Data" />
-
-            <label>Приоритет: </label>
-            <select name="Priority" asp-items="Model.FilterViewModel.Priority"></select>
-
-            <input type="submit" value="Фильтр" />
-        </form>
-
         <table>
             <tr>
                 <td>Id</td>

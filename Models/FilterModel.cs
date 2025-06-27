@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-namespace ToDoList.Models
+﻿namespace ToDoList.Models
 {
     public class FilterModel
     {
-        public string? LablePart { get; }
-        public TasksStatus? Status { get; }
-        public ViewDateScope ViewDateScope { get; } = ViewDateScope.All;
-        public Priority? Priority { get; }
+        public string? LablePart { get; set; }
+        public TasksStatus? Status { get; set; }
+        public ViewDateScope ViewDateScope { get; set; } = ViewDateScope.All;
+        public Priority? Priority { get; set; }
     }
 }

@@ -20,17 +20,16 @@ namespace ToDoList.ViewModels
         {
             string[] viewDateScopes = Enum.GetNames(typeof(ViewDateScope));
             var viewDateScopesList = viewDateScopes.ToList();
-            viewDateScopesList.Insert(0, "Все");
             Data = new SelectList(viewDateScopesList);
 
             string[] tasksStatuses = Enum.GetNames(typeof(TasksStatus));
             var tasksStatusesList = tasksStatuses.ToList();
-            tasksStatusesList.Insert(0, "Все");
+            tasksStatusesList.Insert(0, "All");
             Status = new SelectList(tasksStatusesList);
 
-            string[] priorities = Enum.GetNames(typeof(TasksStatus));
+            string[] priorities = Enum.GetNames(typeof(Priority));
             var prioritiesList = priorities.ToList();
-            prioritiesList.Insert(0, "Все");
+            prioritiesList.Insert(0, "All");
             Priority = new SelectList(prioritiesList);
         }
     }

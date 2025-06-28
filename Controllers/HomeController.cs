@@ -31,34 +31,10 @@ namespace ToDoList.Controllers
             if (userTasks.Any())
             {
                 if (filterViewModel != null)
-                {
-                    if (string.IsNullOrEmpty(filterViewModel.LablePart) == false)
-                        userTasks = userTasks.Where(t => t.Lable.Contains(filterViewModel.LablePart));
-
-                    if (filterViewModel.SelectedStatus != null)
-                        userTasks = userTasks.Where(t => t.Status == filterViewModel.SelectedStatus);
-
-                    if (filterViewModel.SelectedPriority != null)
-                        userTasks = userTasks.Where(t => t.Priority == filterViewModel.SelectedPriority);
-
-                    if (filterViewModel.SelectedDateScope != ViewDateScope.All)
-                    {
-                        var now = DateTime.Now;
-
-                        if (filterViewModel.SelectedDateScope == ViewDateScope.Today)
-                            userTasks = userTasks.Where(t => t.ExpiresDate.Date == now.Date);
-
-                        if (filterViewModel.SelectedDateScope == ViewDateScope.Tomorrow)
-                            userTasks = userTasks.Where(t => t.ExpiresDate.Date == now.AddDays(1).Date);
-
-                        if (filterViewModel.SelectedDateScope == ViewDateScope.ThisMonth)
-                            userTasks = userTasks.Where(t => (t.ExpiresDate.Year == now.Year) && (t.ExpiresDate.Month == now.Month));
-                    }
-                }
+                    userTasks = Filter(userTasks, filterViewModel);
                 else
-                {
                     filterViewModel = new FilterViewModel();
-                }
+
 
                 int Compare(TaskModel a, TaskModel b)
                 {
@@ -118,6 +94,41 @@ namespace ToDoList.Controllers
             ValidateTask(() => (task == null || string.IsNullOrEmpty(task.Id)));
             await _users.DeleteTask(task);
             return RedirectToAction("Index");
+        }
+
+        private IEnumerable<TaskModel> Filter(IEnumerable<TaskModel> userTasks, FilterViewModel filterViewModel)
+        {
+            if (string.IsNullOrEmpty(filterViewModel.LablePart) == false)
+                userTasks = userTasks.Where(t => t.Lable.Contains(filterViewModel.LablePart));
+
+            if (filterViewModel.SelectedStatus != null)
+                userTasks = userTasks.Where(t => t.Status == filterViewModel.SelectedStatus);
+
+            if (filterViewModel.SelectedPriority != null)
+                userTasks = userTasks.Where(t => t.Priority == filterViewModel.SelectedPriority);
+
+            if (filterViewModel.SelectedDateScope != ViewDateScope.All)
+                userTasks = FilterByDate(userTasks, filterViewModel.SelectedDateScope);
+
+            return userTasks;
+        }
+
+        private IEnumerable<TaskModel> FilterByDate(IEnumerable<TaskModel> userTasks, ViewDateScope dateScope)
+        {
+            var now = DateTime.Now;
+
+            userTasks = dateScope switch
+            {
+                ViewDateScope.Today =>
+                   userTasks = userTasks.Where(t => t.ExpiresDate.Date == now.Date),
+                ViewDateScope.Tomorrow =>
+                    userTasks = userTasks.Where(t => t.ExpiresDate.Date == now.AddDays(1).Date),
+                ViewDateScope.ThisMonth =>
+                    userTasks.Where(t => (t.ExpiresDate.Year == now.Year) && (t.ExpiresDate.Month == now.Month)),
+                ViewDateScope.All => userTasks,
+                _ => throw new NotImplementedException(),
+            };
+            return userTasks;
         }
 
         private async Task<UserModel> GetCurrentUser()

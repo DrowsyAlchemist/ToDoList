@@ -8,7 +8,7 @@ namespace ToDoList.ViewModels
         public string? LablePart { get; set; }
 
         public SelectList Data { get; set; }
-        public ViewDateScope? SelectedDateScope { get; set; }
+        public ViewDateScope SelectedDateScope { get; set; } = ViewDateScope.All;
 
         public SelectList Status { get; set; }
         public TasksStatus? SelectedStatus { get; set; }

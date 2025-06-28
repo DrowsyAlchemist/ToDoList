@@ -29,28 +29,32 @@
         }
         -->
     </p>
-    <h2 style="display: inline">To Do List</h2>
-    <span><a href="/Home/CreateTask">Add</a></span>
+    <div style="margin-bottom:20px">
+        <h2 style="display: inline">To Do List</h2>
+        <span><a href="/Home/CreateTask">Add</a></span>
+    </div>
 
-    <form method="get" style="display:inline">
-        <label>Название: </label>
-        <input asp-for="FilterViewModel.LablePart" value="@Model.FilterViewModel.LablePart" />
+    <div style="margin: 10px">
+        <form method="get" style="display:inline">
+            <label>Название: </label>
+            <input asp-for="FilterViewModel.LablePart" value="@Model.FilterViewModel.LablePart" />
 
-        <label>Статус: </label>
-        <select asp-for="FilterViewModel.SelectedStatus" asp-items="@Model.FilterViewModel.Status"></select>
+            <label>Статус: </label>
+            <select asp-for="FilterViewModel.SelectedStatus" asp-items="@Model.FilterViewModel.Status"></select>
 
-        <label>Дата: </label>
-        <select asp-for="FilterViewModel.SelectedDateScope" asp-items="@Model.FilterViewModel.Data"></select>
+            <label>Дата: </label>
+            <select asp-for="FilterViewModel.SelectedDateScope" asp-items="@Model.FilterViewModel.Data"></select>
 
-        <label>Приоритет: </label>
-        <select asp-for="FilterViewModel.SelectedPriority" asp-items="Model.FilterViewModel.Priority"></select>
+            <label>Приоритет: </label>
+            <select asp-for="FilterViewModel.SelectedPriority" asp-items="Model.FilterViewModel.Priority"></select>
 
-        <input type="submit" value="Apply" />
-    </form>
+            <input type="submit" value="Apply" />
+        </form>
 
-    <form method="get" style="display:inline">
-        <input type="submit" value="Reset" />
-    </form>
+        <form method="get" style="display:inline">
+            <input type="submit" value="Reset" />
+        </form>
+    </div>
 
     @if (Model == null || Model.Tasks.Count() == 0)
     {

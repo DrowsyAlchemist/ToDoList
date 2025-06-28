@@ -9,6 +9,9 @@
         DueDateDesc,
 
         StatusAsc,
-        StatusDesc
+        StatusDesc,
+
+        PriorityAsc,
+        PriorityDesc,
     }
 }

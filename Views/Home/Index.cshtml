@@ -36,7 +36,7 @@
 
     <div style="margin: 10px">
         <form method="get" style="display:inline">
-            <label>Название: </label>
+            <label>Название</label>
             <input asp-for="FilterViewModel.LablePart" value="@Model.FilterViewModel.LablePart" />
 
             <label>Статус: </label>
@@ -65,10 +65,28 @@
         <table>
             <tr>
                 <td>Id</td>
-                <td>Lable</td>
-                <td>Date</td>
+                <td>
+                    <a asp-action="Index"
+                       asp-route-sortState="@(Model.SortViewModel.LableSort)"
+                       asp-route-filterViewModel="@(Model.FilterViewModel)">
+                        Lable
+                    </a>
+                </td>
+                <td>
+                    <a asp-action="Index"
+                       asp-route-sortState="@(Model.SortViewModel.DateSort)"
+                       asp-route-filterViewModel="@(Model.FilterViewModel)">
+                        Date
+                    </a>
+                </td>
                 <td>Status</td>
-                <td>Priority</td>
+                <td>
+                    <a asp-action="Index"
+                       asp-route-sortState="@(Model.SortViewModel.PrioritySort)"
+                       asp-route-filterViewModel="@(Model.FilterViewModel)">
+                        Priority
+                    </a>
+                </td>
                 <td>Description</td>
             </tr>
 

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
 using ToDoList.DataBase;
 using ToDoList.Logger;
 using ToDoList.Models;
@@ -28,28 +27,35 @@ namespace ToDoList.Controllers
             var currentUser = await GetCurrentUser();
             IEnumerable<TaskModel>? userTasks = currentUser.Tasks;
 
+            filterViewModel ??= new FilterViewModel();
+            var sortViewModel = new SortViewModel(sortState);
+            var pageViewModel = new PageViewModel(userTasks.Count(), 1, userTasks.Count());
+
             if (userTasks.Any())
             {
-                if (filterViewModel != null)
-                    userTasks = Filter(userTasks, filterViewModel);
-                else
-                    filterViewModel = new FilterViewModel();
+                // Фильтрация
+                userTasks = FilterTasks(userTasks, filterViewModel);
+
+                //Сортировка
+                userTasks = SortTasks(userTasks, sortViewModel);
+
+                //Пагинация
 
 
-                int Compare(TaskModel a, TaskModel b)
-                {
-                    if (a.ExpiresDate == null)
-                        return -1;
-                    if (b.ExpiresDate == null)
-                        return 1;
+                //int Compare(TaskModel a, TaskModel b)
+                //{
+                //    if (a.ExpiresDate == null)
+                //        return -1;
+                //    if (b.ExpiresDate == null)
+                //        return 1;
 
-                    return (int)(a.ExpiresDate - b.ExpiresDate).TotalMinutes;
-                }
-                currentUser.Tasks.Sort(Compare);
+                //    return (int)(a.ExpiresDate - b.ExpiresDate).TotalMinutes;
+                //}
+                //currentUser.Tasks.Sort(Compare);
             }
 
-            SortViewModel sortViewModel = new SortViewModel(SortState.LableAsc);
-            PageViewModel pageViewModel = new PageViewModel(userTasks.Count(), 1, userTasks.Count());
+
+
 
             IndexViewModel indexViewModel = new IndexViewModel(userTasks, pageViewModel, filterViewModel, sortViewModel);
 
@@ -96,21 +102,38 @@ namespace ToDoList.Controllers
             return RedirectToAction("Index");
         }
 
-        private IEnumerable<TaskModel> Filter(IEnumerable<TaskModel> userTasks, FilterViewModel filterViewModel)
+        private IEnumerable<TaskModel> FilterTasks(IEnumerable<TaskModel> tasks, FilterViewModel filterViewModel)
         {
             if (string.IsNullOrEmpty(filterViewModel.LablePart) == false)
-                userTasks = userTasks.Where(t => t.Lable.Contains(filterViewModel.LablePart));
+                tasks = tasks.Where(t => t.Lable.Contains(filterViewModel.LablePart));
 
             if (filterViewModel.SelectedStatus != null)
-                userTasks = userTasks.Where(t => t.Status == filterViewModel.SelectedStatus);
+                tasks = tasks.Where(t => t.Status == filterViewModel.SelectedStatus);
 
             if (filterViewModel.SelectedPriority != null)
-                userTasks = userTasks.Where(t => t.Priority == filterViewModel.SelectedPriority);
+                tasks = tasks.Where(t => t.Priority == filterViewModel.SelectedPriority);
 
             if (filterViewModel.SelectedDateScope != ViewDateScope.All)
-                userTasks = FilterByDate(userTasks, filterViewModel.SelectedDateScope);
+                tasks = FilterByDate(tasks, filterViewModel.SelectedDateScope);
 
-            return userTasks;
+            return tasks;
+        }
+
+        private IEnumerable<TaskModel> SortTasks(IEnumerable<TaskModel> tasks, SortViewModel sortViewModel)
+        {
+            tasks = sortViewModel.Current switch
+            {
+                SortState.LableAsc => tasks.OrderBy(t => t.Lable),
+                SortState.LableDesc => tasks.OrderByDescending(t => t.Lable),
+                SortState.DueDateAsc => tasks.OrderBy(t => t.ExpiresDate),
+                SortState.DueDateDesc => tasks.OrderByDescending(t => t.ExpiresDate),
+                SortState.StatusAsc => tasks.OrderBy(t => t.Status),
+                SortState.StatusDesc => tasks.OrderByDescending(t => t.Status),
+                SortState.PriorityAsc => tasks.OrderBy(t => t.Priority),
+                SortState.PriorityDesc => tasks.OrderByDescending(t => t.Priority),
+                _ => throw new NotImplementedException(),
+            };
+            return tasks;
         }
 
         private IEnumerable<TaskModel> FilterByDate(IEnumerable<TaskModel> userTasks, ViewDateScope dateScope)

@@ -11,6 +11,7 @@ namespace ToDoList.Controllers
     {
         private readonly UserRepository _users;
         private readonly AppLogger _logger;
+        private static int _pageSize = 10;
 
         public HomeController(UserRepository usersRepository, AppLogger appLogger)
         {
@@ -20,45 +21,28 @@ namespace ToDoList.Controllers
 
         [Authorize]
         public async Task<IActionResult> Index(
-            FilterViewModel filterViewModel,
+            FilterViewModel? filterViewModel = null,
             SortState sortState = SortState.DueDateAsc,
-            int pageNumber = 0)
+            int pageNumber = 1)
         {
             var currentUser = await GetCurrentUser();
             IEnumerable<TaskModel>? userTasks = currentUser.Tasks;
 
-            filterViewModel ??= new FilterViewModel();
+            if (filterViewModel == null)
+                filterViewModel = new FilterViewModel();
+
             var sortViewModel = new SortViewModel(sortState);
-            var pageViewModel = new PageViewModel(userTasks.Count(), 1, userTasks.Count());
+            var pageViewModel = new PageViewModel(userTasks.Count(), pageNumber, _pageSize);
 
             if (userTasks.Any())
             {
-                // Фильтрация
                 userTasks = FilterTasks(userTasks, filterViewModel);
-
-                //Сортировка
                 userTasks = SortTasks(userTasks, sortViewModel);
 
-                //Пагинация
-
-
-                //int Compare(TaskModel a, TaskModel b)
-                //{
-                //    if (a.ExpiresDate == null)
-                //        return -1;
-                //    if (b.ExpiresDate == null)
-                //        return 1;
-
-                //    return (int)(a.ExpiresDate - b.ExpiresDate).TotalMinutes;
-                //}
-                //currentUser.Tasks.Sort(Compare);
+                pageViewModel = new PageViewModel(userTasks.Count(), pageNumber, _pageSize);
+                userTasks = Paginate(userTasks, pageViewModel);
             }
-
-
-
-
-            IndexViewModel indexViewModel = new IndexViewModel(userTasks, pageViewModel, filterViewModel, sortViewModel);
-
+            var indexViewModel = new IndexViewModel(userTasks, pageViewModel, filterViewModel, sortViewModel);
             return View(indexViewModel);
         }
 
@@ -102,6 +86,26 @@ namespace ToDoList.Controllers
             return RedirectToAction("Index");
         }
 
+        public IActionResult SetPageSize(
+            FilterViewModel filterViewModel,
+            SortState sortState = SortState.DueDateAsc,
+            int pageSize = 1)
+        {
+            if (pageSize > 0)
+                _pageSize = pageSize;
+
+            return RedirectToAction("Index",
+                new
+                {
+                    filterViewModel.LablePart,
+                    filterViewModel.SelectedPriority,
+                    filterViewModel.SelectedStatus,
+                    filterViewModel.SelectedDateScope,
+                    sortState,
+                    pageNumber = 1
+                });
+        }
+
         private IEnumerable<TaskModel> FilterTasks(IEnumerable<TaskModel> tasks, FilterViewModel filterViewModel)
         {
             if (string.IsNullOrEmpty(filterViewModel.LablePart) == false)
@@ -136,22 +140,29 @@ namespace ToDoList.Controllers
             return tasks;
         }
 
-        private IEnumerable<TaskModel> FilterByDate(IEnumerable<TaskModel> userTasks, ViewDateScope dateScope)
+        private IEnumerable<TaskModel> FilterByDate(IEnumerable<TaskModel> tasks, ViewDateScope dateScope)
         {
             var now = DateTime.Now;
 
-            userTasks = dateScope switch
+            tasks = dateScope switch
             {
                 ViewDateScope.Today =>
-                   userTasks = userTasks.Where(t => t.ExpiresDate.Date == now.Date),
+                   tasks = tasks.Where(t => t.ExpiresDate.Date == now.Date),
                 ViewDateScope.Tomorrow =>
-                    userTasks = userTasks.Where(t => t.ExpiresDate.Date == now.AddDays(1).Date),
+                    tasks = tasks.Where(t => t.ExpiresDate.Date == now.AddDays(1).Date),
                 ViewDateScope.ThisMonth =>
-                    userTasks.Where(t => (t.ExpiresDate.Year == now.Year) && (t.ExpiresDate.Month == now.Month)),
-                ViewDateScope.All => userTasks,
+                    tasks.Where(t => (t.ExpiresDate.Year == now.Year) && (t.ExpiresDate.Month == now.Month)),
+                ViewDateScope.All => tasks,
                 _ => throw new NotImplementedException(),
             };
-            return userTasks;
+            return tasks;
+        }
+
+        private IEnumerable<TaskModel> Paginate(IEnumerable<TaskModel> tasks, PageViewModel pageViewModel)
+        {
+            int skipCount = (pageViewModel.PageNumber - 1) * pageViewModel.ItemsPerPage;
+            tasks = tasks.Skip(skipCount).Take(pageViewModel.ItemsPerPage);
+            return tasks;
         }
 
         private async Task<UserModel> GetCurrentUser()

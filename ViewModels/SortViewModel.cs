@@ -16,5 +16,6 @@ namespace ToDoList.ViewModels
             PrioritySort = (sortState == SortState.PriorityAsc) ? SortState.PriorityDesc : SortState.PriorityAsc;
             Current = sortState;
         }
+        public SortViewModel() { }
     }
 }

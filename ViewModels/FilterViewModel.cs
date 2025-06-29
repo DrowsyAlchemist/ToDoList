@@ -5,7 +5,7 @@ namespace ToDoList.ViewModels
 {
     public class FilterViewModel
     {
-        public string? LablePart { get; set; }
+        public string LablePart { get; set; } = string.Empty;
 
         public SelectList Data { get; set; }
         public ViewDateScope SelectedDateScope { get; set; } = ViewDateScope.All;

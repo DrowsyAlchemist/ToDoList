@@ -25,6 +25,10 @@ namespace ToDoList.Controllers
             SortState sortState = SortState.DueDateAsc,
             int pageNumber = 1)
         {
+            foreach(var v in Request.Query)
+                _logger.LogInfo(v.Key + " - " + v.Value);
+
+
             var currentUser = await GetCurrentUser();
             IEnumerable<TaskModel>? userTasks = currentUser.Tasks;
 

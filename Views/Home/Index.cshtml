@@ -32,22 +32,29 @@
     </style>
 </head>
 <body>
-    <p>
-        <a href="/Profile/Index">Profile</a>
+
+
+
+
+
+    <div>
+
         <!--
             if (Model.Role == Role.Admin)
         {
            <a style="margin-left: 10px" href="/Admin/Index">Admin Page</a>
         }
         -->
-    </p>
+    </div>
+
+
     <div style="margin-bottom:20px">
         <h2 style="display: inline">To Do List</h2>
         <span><a href="/Home/CreateTask">Add</a></span>
     </div>
 
     <div style="margin: 10px">
-        <form asp-all-route-data="parms" method="get" style="display:inline">
+        <form asp-action="Index" asp-route-sortState="@Model.SortViewModel.Current.ToString()" style="display:inline">
             <label>Название</label>
             <input asp-for="FilterViewModel.LablePart" value="@Model.FilterViewModel.LablePart" />
 
@@ -63,10 +70,22 @@
             <input type="submit" value="Apply" />
         </form>
 
-        <form method="get" style="display:inline">
+        <form asp-action="Index" asp-route-sortState="@(Model.SortViewModel.Current)" style="display:inline">
             <input type="submit" value="Reset" />
         </form>
     </div>
+
+    <form style="margin: 10px"
+          asp-action="SetPageSize"
+          asp-all-route-data="parms">
+
+        <label>Page size:</label>
+        <input value="@Model.PageViewModel.ItemsPerPage"
+               type="number"
+               name="pageSize" />
+
+        <input type="submit" value="Apply" />
+    </form>
 
     @if (Model == null || Model.Tasks.Count() == 0)
     {
@@ -121,26 +140,17 @@
             }
         </table>
 
-        @for (int i = 1; i <= Model.PageViewModel.TotalPages; i++)
-        {
-            <a asp-action="Index"
-               asp-all-route-data="parms"
-               asp-route-pageNumber="@i">
-                @i
-            </a>
-        }
-
-        <form style="margin: 10px"
-              asp-action="SetPageSize"
-              asp-all-route-data="parms">
-
-            <label>Page size:</label>
-            <input value="@Model.PageViewModel.ItemsPerPage"
-                   type="number"
-                   name="pageSize" />
-
-            <input type="submit" value="Apply" />
-        </form>
+        <div style="margin:10px">
+            @for (int i = 1; i <= Model.PageViewModel.TotalPages; i++)
+            {
+                <a asp-action="Index"
+                   asp-all-route-data="parms"
+                   asp-route-sortState="@Model.SortViewModel.Current.ToString()"
+                   asp-route-pageNumber="@i">
+                    @i
+                </a>
+            }
+        </div>
     }
 
 </body>

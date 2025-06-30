@@ -25,7 +25,7 @@ namespace ToDoList.Controllers
             SortState sortState = SortState.DueDateAsc,
             int pageNumber = 1)
         {
-            foreach(var v in Request.Query)
+            foreach (var v in Request.Query)
                 _logger.LogInfo(v.Key + " - " + v.Value);
 
 
@@ -46,7 +46,7 @@ namespace ToDoList.Controllers
                 pageViewModel = new PageViewModel(userTasks.Count(), pageNumber, _pageSize);
                 userTasks = Paginate(userTasks, pageViewModel);
             }
-            var indexViewModel = new IndexViewModel(userTasks, pageViewModel, filterViewModel, sortViewModel);
+            var indexViewModel = new IndexViewModel(userTasks, pageViewModel, filterViewModel, sortViewModel, currentUser.Role);
             return View(indexViewModel);
         }
 

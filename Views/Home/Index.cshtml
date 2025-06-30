@@ -33,20 +33,12 @@
 </head>
 <body>
 
-
-
-
-
     <div>
-
-        <!--
-            if (Model.Role == Role.Admin)
+        @if (Model.UserRole == Role.Admin)
         {
-           <a style="margin-left: 10px" href="/Admin/Index">Admin Page</a>
+            <a style="margin: 10px" href="/Admin/Index">Admin Page</a>
         }
-        -->
     </div>
-
 
     <div style="margin-bottom:20px">
         <h2 style="display: inline">To Do List</h2>

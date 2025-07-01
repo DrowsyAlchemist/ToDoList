@@ -135,8 +135,6 @@ namespace ToDoList.Controllers
                 SortState.LableDesc => tasks.OrderByDescending(t => t.Lable),
                 SortState.DueDateAsc => tasks.OrderBy(t => t.ExpiresDate),
                 SortState.DueDateDesc => tasks.OrderByDescending(t => t.ExpiresDate),
-                SortState.StatusAsc => tasks.OrderBy(t => t.Status),
-                SortState.StatusDesc => tasks.OrderByDescending(t => t.Status),
                 SortState.PriorityAsc => tasks.OrderBy(t => t.Priority),
                 SortState.PriorityDesc => tasks.OrderByDescending(t => t.Priority),
                 _ => throw new NotImplementedException(),

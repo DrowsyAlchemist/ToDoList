@@ -119,7 +119,7 @@
                     <sort action="Index"
                           page-url-values="parms"
                           this-sort-state="@Model.SortViewModel.LableSort"
-                          selected-sort-state="@Model.SortViewModel.Current"
+                          selected-sort-state="@Model.SortViewModel.Next"
                           is-asc="@Model.SortViewModel.IsAsc">
                         Lable
                     </sort>
@@ -128,7 +128,7 @@
                     <sort action="Index"
                           page-url-values="parms"
                           this-sort-state="@Model.SortViewModel.DateSort"
-                          selected-sort-state="@Model.SortViewModel.Current"
+                          selected-sort-state="@Model.SortViewModel.Next"
                           is-asc="@Model.SortViewModel.IsAsc">
                         Date
                     </sort>
@@ -138,7 +138,7 @@
                     <sort action="Index"
                           page-url-values="parms"
                           this-sort-state="@Model.SortViewModel.PrioritySort"
-                          selected-sort-state="@Model.SortViewModel.Current"
+                          selected-sort-state="@Model.SortViewModel.Next"
                           is-asc="@Model.SortViewModel.IsAsc">
                         Priority
                     </sort>
@@ -165,17 +165,23 @@
             }
         </table>
 
-        <div style="margin:10px">
-            @for (int i = 1; i <= Model.PageViewModel.TotalPages; i++)
-            {
-                <a asp-action="Index"
-                   asp-all-route-data="parms"
-                   asp-route-sortState="@Model.SortViewModel.Current.ToString()"
-                   asp-route-pageNumber="@i">
-                    @i
-                </a>
-            }
-        </div>
+        <page-link page-action="Index"
+                   page-model="@Model.PageViewModel"
+                   page-url-values="parms">
+
+        </page-link>
+
+        @*  <div style="margin:10px">
+    @for (int i = 1; i <= Model.PageViewModel.TotalPages; i++)
+    {
+    <a asp-action="Index"
+    asp-all-route-data="parms"
+    asp-route-sortState="@Model.SortViewModel.Current.ToString()"
+    asp-route-pageNumber="@i">
+    @i
+    </a>
+    }
+    </div> *@
     }
 
 </body>

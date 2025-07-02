@@ -8,6 +8,7 @@ namespace ToDoList.ViewModels
         public SortState DateSort { get; }
         public SortState PrioritySort { get; }
         public SortState Current { get; }
+        public SortState Next { get; }
         public bool IsAsc => Current == SortState.LableAsc
             || Current == SortState.PriorityAsc
             || Current == SortState.DueDateAsc;
@@ -21,26 +22,27 @@ namespace ToDoList.ViewModels
             switch (sortState)
             {
                 case SortState.LableAsc:
-                    Current = LableSort = SortState.LableDesc;
+                    Next = LableSort = SortState.LableDesc;
                     break;
                 case SortState.LableDesc:
-                    Current = LableSort = SortState.LableAsc;
+                    Next = LableSort = SortState.LableAsc;
                     break;
                 case SortState.DueDateAsc:
-                    Current = DateSort = SortState.DueDateDesc;
+                    Next = DateSort = SortState.DueDateDesc;
                     break;
                 case SortState.DueDateDesc:
-                    Current = DateSort = SortState.DueDateAsc;
+                    Next = DateSort = SortState.DueDateAsc;
                     break;
                 case SortState.PriorityAsc:
-                    Current = PrioritySort = SortState.PriorityDesc;
+                    Next = PrioritySort = SortState.PriorityDesc;
                     break;
                 case SortState.PriorityDesc:
-                    Current = PrioritySort = SortState.PriorityAsc;
+                    Next = PrioritySort = SortState.PriorityAsc;
                     break;
                 default:
                     throw new NotImplementedException();
             }
+            Current = sortState;
         }
     }
 }

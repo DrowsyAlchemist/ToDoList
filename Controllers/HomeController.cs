@@ -23,14 +23,15 @@ namespace ToDoList.Controllers
         public async Task<IActionResult> Index(
             FilterViewModel? filterViewModel = null,
             SortState sortState = SortState.DueDateAsc,
-            int pageNumber = 1)
+            int pageNumber = 1,
+            string? userId = null)
         {
             foreach (var v in Request.Query)
                 _logger.LogInfo(v.Key + " - " + v.Value);
 
-
-            var currentUser = await GetCurrentUser();
-            IEnumerable<TaskModel>? userTasks = currentUser.Tasks;
+            UserModel currentUser = await GetCurrentUser();
+            UserModel? userToView = string.IsNullOrEmpty(userId) ? currentUser : await _users.GetById(userId);
+            IEnumerable<TaskModel>? userTasks = userToView.Tasks;
 
             if (filterViewModel == null)
                 filterViewModel = new FilterViewModel();

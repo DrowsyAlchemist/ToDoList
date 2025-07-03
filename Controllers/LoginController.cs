@@ -165,14 +165,14 @@ namespace ToDoList.Controllers
             UserModel user2 = new UserModel
             {
                 Name = "Bob",
-                Role = Role.Admin,
+                Role = Role.User,
                 LoginData = user2LoginData
             };
 
             TaskModel task1 = new TaskModel
             {
                 Lable = "Учить англиский",
-                Status = Models.TasksStatus.Active,
+                Status = TasksStatus.Active,
                 Priority = Priority.Low,
                 ExpiresDate = DateTime.Now + TimeSpan.FromDays(1),
                 User = user1
@@ -180,7 +180,7 @@ namespace ToDoList.Controllers
             TaskModel task2 = new TaskModel
             {
                 Lable = "Учить японский",
-                Status = Models.TasksStatus.Pending,
+                Status = TasksStatus.Pending,
                 Priority = Priority.Medium,
                 ExpiresDate = DateTime.Now + TimeSpan.FromDays(2),
                 User = user1
@@ -188,7 +188,7 @@ namespace ToDoList.Controllers
             TaskModel task3 = new TaskModel
             {
                 Lable = "Программировать",
-                Status = Models.TasksStatus.Done,
+                Status = TasksStatus.Done,
                 Priority = Priority.High,
                 ExpiresDate = DateTime.Now + TimeSpan.FromHours(5),
                 User = user1
@@ -196,7 +196,7 @@ namespace ToDoList.Controllers
             TaskModel task4 = new TaskModel
             {
                 Lable = "Сделать зарядку",
-                Status = Models.TasksStatus.Done,
+                Status = TasksStatus.Done,
                 Priority = Priority.Medium,
                 ExpiresDate = DateTime.Now + TimeSpan.FromHours(1),
                 User = user1
@@ -204,7 +204,7 @@ namespace ToDoList.Controllers
             TaskModel task5 = new TaskModel
             {
                 Lable = "Помыть посуду",
-                Status = Models.TasksStatus.Pending,
+                Status = TasksStatus.Pending,
                 Priority = Priority.Low,
                 ExpiresDate = DateTime.Now + TimeSpan.FromHours(7),
                 User = user1
@@ -212,7 +212,7 @@ namespace ToDoList.Controllers
             TaskModel task6 = new TaskModel
             {
                 Lable = "Приготовить ужин",
-                Status = Models.TasksStatus.Cancelled,
+                Status = TasksStatus.Cancelled,
                 Priority = Priority.Medium,
                 ExpiresDate = DateTime.Now + TimeSpan.FromSeconds(15),
                 User = user1
@@ -220,7 +220,7 @@ namespace ToDoList.Controllers
             TaskModel task7 = new TaskModel
             {
                 Lable = "Погулять с собакой",
-                Status = Models.TasksStatus.Pending,
+                Status = TasksStatus.Pending,
                 Priority = Priority.High,
                 ExpiresDate = DateTime.Now + TimeSpan.FromMinutes(35),
                 User = user1

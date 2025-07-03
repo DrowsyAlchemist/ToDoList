@@ -34,35 +34,10 @@
                 <td>@user.Role</td>
                 <td>@user.Avatar</td>
                 <td>@user.Tasks.Count</td>
-                <td>@Html.ActionLink("View tasks", "ViewUserTasks", "Admin", user)</td>
+                <td>@Html.ActionLink("View tasks", "Index", "Home", new {userId = user.Id})</td>
                 <td>@Html.ActionLink("Delete User", "DeleteUser", "Admin", user)</td>
             </tr>
         }
     </table>
-@* 
-    <h3>Tasks</h3>
-    <table>
-        <tr>
-            <td>Id</td>
-            <td>Lable</td>
-            <td>Date</td>
-            <td>Status</td>
-            <td>Priority</td>
-            <td>Description</td>
-        </tr>
-
-        @foreach (TaskModel task in Model.Tasks)
-        {
-            <tr>
-                <td>@task.Id</td>
-                <td>@task.Lable</td>
-                <td>@task.ExpiresDate</td>
-                <td>@task.Status</td>
-                <td>@task.Priority</td>
-                <td>@task.Description</td>
-            </tr>
-        }
-    </table>
- *@
 </body>
 </html>

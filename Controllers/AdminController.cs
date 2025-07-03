@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Sockets;
 using ToDoList.DataBase;
 using ToDoList.Logger;
 using ToDoList.Models;
@@ -26,16 +26,23 @@ namespace ToDoList.Controllers
             return View(new AdminModel(users));
         }
 
-        public async Task<IActionResult> ViewUserTasks(UserModel user)
-        {
-            var userInDb = await _users.GetById(user.Id);
-            return View(userInDb);
-        }
-
         public async Task<IActionResult> DeleteUser(UserModel user)
         {
             await _users.DeleteUser(user);
             return RedirectToAction("Index");
         }
+
+        //public IActionResult ViewUserTasks(UserModel user)
+        //{
+        //    _logger.LogWarning("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        //    _logger.LogWarning(user.Name);
+        //    return RedirectToActionPreserveMethod("ViewUserTasks", "Admin", new { user });
+        //    //foreach (var v in Request.Query)
+        //    //    _logger.LogInfo(v.Key + " - " + v.Value);
+
+        //    //var userInDb = await _users.GetById(user.Id);
+        //    //return View(userInDb);
+        //}
+
     }
 }

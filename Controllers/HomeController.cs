@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ToDoList.DataBase;
 using ToDoList.Logger;
 using ToDoList.Models;
+using ToDoList.Services;
 using ToDoList.ViewModels;
 
 namespace ToDoList.Controllers
@@ -32,24 +33,20 @@ namespace ToDoList.Controllers
             UserModel currentUser = await GetCurrentUser();
             UserModel? userToView = string.IsNullOrEmpty(userId) ? currentUser : await _users.GetById(userId);
             IEnumerable<TaskModel>? userTasks = userToView.Tasks;
+            bool isAdmin = currentUser.Role == Role.Admin;
+            bool canEditTasks = currentUser.Id.Equals(userToView.Id);
 
-            if (filterViewModel == null)
-                filterViewModel = new FilterViewModel();
-
-            var sortViewModel = new SortViewModel(sortState);
-            var pageViewModel = new PageViewModel(userTasks.Count(), pageNumber, _pageSize);
-
-            if (userTasks.Any())
+            if (isAdmin && (canEditTasks == false))
             {
-                userTasks = FilterTasks(userTasks, filterViewModel);
-                userTasks = SortTasks(userTasks, sortViewModel);
-
-                pageViewModel = new PageViewModel(userTasks.Count(), pageNumber, _pageSize);
-                userTasks = Paginate(userTasks, pageViewModel);
+                ViewData["Name"] = userToView.Name;
+                ViewData["Email"] = userToView.LoginData.Email;
+                ViewData["Id"] = userToView.Id;
             }
-            var indexViewModel = new IndexViewModel(userTasks, pageViewModel, filterViewModel, sortViewModel, currentUser.Role);
+            var indexViewModel = TasksOrganizer.Organize(userTasks, filterViewModel, sortState, pageNumber, isAdmin, canEditTasks);
             return View(indexViewModel);
         }
+
+
 
         [Authorize]
         public IActionResult EditTask(TaskModel task)
@@ -91,82 +88,88 @@ namespace ToDoList.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult SetPageSize(
-            FilterViewModel filterViewModel,
-            SortState sortState = SortState.DueDateAsc,
-            int pageSize = 1)
-        {
-            if (pageSize > 0)
-                _pageSize = pageSize;
+        //private IActionResult OrganizeTasks(
+        //    IEnumerable<TaskModel>? userTasks,
+        //    FilterViewModel? filterViewModel = null,
+        //    SortState sortState = SortState.DueDateAsc,
+        //    int pageNumber = 1,
+        //    bool isAdmin = false,
+        //    bool canEditTasks = false)
+        //{
+        //    if (filterViewModel == null)
+        //        filterViewModel = new FilterViewModel();
 
-            return RedirectToAction("Index",
-                new
-                {
-                    filterViewModel.LablePart,
-                    filterViewModel.SelectedPriority,
-                    filterViewModel.SelectedStatus,
-                    filterViewModel.SelectedDateScope,
-                    sortState,
-                    pageNumber = 1
-                });
-        }
+        //    var sortViewModel = new SortViewModel(sortState);
+        //    var pageViewModel = new PageViewModel(userTasks.Count(), pageNumber, _pageSize);
 
-        private IEnumerable<TaskModel> FilterTasks(IEnumerable<TaskModel> tasks, FilterViewModel filterViewModel)
-        {
-            if (string.IsNullOrEmpty(filterViewModel.LablePart) == false)
-                tasks = tasks.Where(t => t.Lable.Contains(filterViewModel.LablePart));
+        //    if (userTasks.Any())
+        //    {
+        //        userTasks = FilterTasks(userTasks, filterViewModel);
+        //        userTasks = SortTasks(userTasks, sortViewModel);
 
-            if (filterViewModel.SelectedStatus != null)
-                tasks = tasks.Where(t => t.Status == filterViewModel.SelectedStatus);
+        //        pageViewModel = new PageViewModel(userTasks.Count(), pageNumber, _pageSize);
+        //        userTasks = Paginate(userTasks, pageViewModel);
+        //    }
+        //    var indexViewModel = new IndexViewModel(userTasks, pageViewModel, filterViewModel, sortViewModel, isAdmin, canEditTasks);
+        //    return View(indexViewModel);
+        //}
 
-            if (filterViewModel.SelectedPriority != null)
-                tasks = tasks.Where(t => t.Priority == filterViewModel.SelectedPriority);
+        //private IEnumerable<TaskModel> FilterTasks(IEnumerable<TaskModel> tasks, FilterViewModel filterViewModel)
+        //{
+        //    if (string.IsNullOrEmpty(filterViewModel.LablePart) == false)
+        //        tasks = tasks.Where(t => t.Lable.Contains(filterViewModel.LablePart));
 
-            if (filterViewModel.SelectedDateScope != ViewDateScope.All)
-                tasks = FilterByDate(tasks, filterViewModel.SelectedDateScope);
+        //    if (filterViewModel.SelectedStatus != null)
+        //        tasks = tasks.Where(t => t.Status == filterViewModel.SelectedStatus);
 
-            return tasks;
-        }
+        //    if (filterViewModel.SelectedPriority != null)
+        //        tasks = tasks.Where(t => t.Priority == filterViewModel.SelectedPriority);
 
-        private IEnumerable<TaskModel> SortTasks(IEnumerable<TaskModel> tasks, SortViewModel sortViewModel)
-        {
-            tasks = sortViewModel.Current switch
-            {
-                SortState.LableAsc => tasks.OrderBy(t => t.Lable),
-                SortState.LableDesc => tasks.OrderByDescending(t => t.Lable),
-                SortState.DueDateAsc => tasks.OrderBy(t => t.ExpiresDate),
-                SortState.DueDateDesc => tasks.OrderByDescending(t => t.ExpiresDate),
-                SortState.PriorityAsc => tasks.OrderBy(t => t.Priority),
-                SortState.PriorityDesc => tasks.OrderByDescending(t => t.Priority),
-                _ => throw new NotImplementedException(),
-            };
-            return tasks;
-        }
+        //    if (filterViewModel.SelectedDateScope != ViewDateScope.All)
+        //        tasks = FilterByDate(tasks, filterViewModel.SelectedDateScope);
 
-        private IEnumerable<TaskModel> FilterByDate(IEnumerable<TaskModel> tasks, ViewDateScope dateScope)
-        {
-            var now = DateTime.Now;
+        //    return tasks;
+        //}
 
-            tasks = dateScope switch
-            {
-                ViewDateScope.Today =>
-                   tasks = tasks.Where(t => t.ExpiresDate.Date == now.Date),
-                ViewDateScope.Tomorrow =>
-                    tasks = tasks.Where(t => t.ExpiresDate.Date == now.AddDays(1).Date),
-                ViewDateScope.ThisMonth =>
-                    tasks.Where(t => (t.ExpiresDate.Year == now.Year) && (t.ExpiresDate.Month == now.Month)),
-                ViewDateScope.All => tasks,
-                _ => throw new NotImplementedException(),
-            };
-            return tasks;
-        }
+        //private IEnumerable<TaskModel> SortTasks(IEnumerable<TaskModel> tasks, SortViewModel sortViewModel)
+        //{
+        //    tasks = sortViewModel.Current switch
+        //    {
+        //        SortState.LableAsc => tasks.OrderBy(t => t.Lable),
+        //        SortState.LableDesc => tasks.OrderByDescending(t => t.Lable),
+        //        SortState.DueDateAsc => tasks.OrderBy(t => t.ExpiresDate),
+        //        SortState.DueDateDesc => tasks.OrderByDescending(t => t.ExpiresDate),
+        //        SortState.PriorityAsc => tasks.OrderBy(t => t.Priority),
+        //        SortState.PriorityDesc => tasks.OrderByDescending(t => t.Priority),
+        //        _ => throw new NotImplementedException(),
+        //    };
+        //    return tasks;
+        //}
 
-        private IEnumerable<TaskModel> Paginate(IEnumerable<TaskModel> tasks, PageViewModel pageViewModel)
-        {
-            int skipCount = (pageViewModel.PageNumber - 1) * pageViewModel.ItemsPerPage;
-            tasks = tasks.Skip(skipCount).Take(pageViewModel.ItemsPerPage);
-            return tasks;
-        }
+        //private IEnumerable<TaskModel> FilterByDate(IEnumerable<TaskModel> tasks, ViewDateScope dateScope)
+        //{
+        //    var now = DateTime.Now;
+
+        //    tasks = dateScope switch
+        //    {
+        //        ViewDateScope.Today =>
+        //           tasks = tasks.Where(t => t.ExpiresDate.Date == now.Date),
+        //        ViewDateScope.Tomorrow =>
+        //            tasks = tasks.Where(t => t.ExpiresDate.Date == now.AddDays(1).Date),
+        //        ViewDateScope.ThisMonth =>
+        //            tasks.Where(t => (t.ExpiresDate.Year == now.Year) && (t.ExpiresDate.Month == now.Month)),
+        //        ViewDateScope.All => tasks,
+        //        _ => throw new NotImplementedException(),
+        //    };
+        //    return tasks;
+        //}
+
+        //private IEnumerable<TaskModel> Paginate(IEnumerable<TaskModel> tasks, PageViewModel pageViewModel)
+        //{
+        //    int skipCount = (pageViewModel.PageNumber - 1) * pageViewModel.ItemsPerPage;
+        //    tasks = tasks.Skip(skipCount).Take(pageViewModel.ItemsPerPage);
+        //    return tasks;
+        //}
 
         private async Task<UserModel> GetCurrentUser()
         {

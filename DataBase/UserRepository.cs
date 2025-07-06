@@ -74,10 +74,10 @@ namespace ToDoList.DataBase
             return oldUser;
         }
 
-        public async Task<UserModel> DeleteUser(UserModel user)
+        public async Task<UserModel> DeleteUser(string userId)
         {
-            ArgumentNullException.ThrowIfNull(user);
-            var userToRemove = await GetById(user.Id);
+            ArgumentNullException.ThrowIfNull(userId);
+            var userToRemove = await GetById(userId);
 
             if (userToRemove == null)
                 throw new InvalidOperationException("Пользователь не найден.");

@@ -23,9 +23,9 @@ namespace ToDoList.Controllers
         [Authorize]
         public async Task<IActionResult> Index(TasksOrganizationInfo organizationInfo, string? userId = null)
         {
-            if (organizationInfo.PageViewModel == null && organizationInfo.FilterViewModel == null)
-                if (TempData.ContainsKey("organizationInfo"))
-                    organizationInfo = (TasksOrganizationInfo)TempData["organizationInfo"];
+            //  if (organizationInfo.PageViewModel == null && organizationInfo.FilterViewModel == null)
+            //    if (TempData.ContainsKey("organizationInfo"))
+            //       organizationInfo = (TasksOrganizationInfo)TempData["organizationInfo"];
 
             foreach (var v in Request.Query)
                 _logger.LogInfo(v.Key + " - " + v.Value);
@@ -52,12 +52,27 @@ namespace ToDoList.Controllers
         [Authorize]
         public IActionResult SetPageSize(TasksOrganizationInfo organizationInfo, int pageSize)
         {
+            foreach (var v in Request.Query)
+                _logger.LogInfo(v.Key + " - " + v.Value);
+
+
             if (pageSize > 0)
                 organizationInfo.PageViewModel.ItemsPerPage = pageSize;
+            //      routeValues["PageViewModel.ItemsPerPage"] = pageSize.ToString();
 
-            TempData["organizationInfo"] = organizationInfo;
+            var routeValues = new Dictionary<string, string>
+            {
+                { "FilterViewModel.LablePart", organizationInfo.FilterViewModel.LablePart },
+                { "FilterViewModel.SelectedDateScope", organizationInfo.FilterViewModel.SelectedDateScope.ToString() },
+                { "FilterViewModel.SelectedStatus", (organizationInfo.FilterViewModel.SelectedStatus.HasValue)?organizationInfo.FilterViewModel.SelectedStatus.Value.ToString():"null" },
+                { "FilterViewModel.SelectedPriority",(organizationInfo.FilterViewModel.SelectedPriority.HasValue)?organizationInfo.FilterViewModel.SelectedPriority.Value.ToString():"null" },
+                { "sortState", organizationInfo.SortState.ToString() },
+                { "PageViewModel.PageNumber", organizationInfo.PageViewModel.PageNumber.ToString() },
+                { "PageViewModel.ItemsCount", organizationInfo.PageViewModel.ItemsCount.ToString()},
+                { "PageViewModel.ItemsPerPage", organizationInfo.PageViewModel.ItemsPerPage.ToString()},
+            };
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", routeValues);
         }
 
         [Authorize]

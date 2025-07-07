@@ -46,7 +46,7 @@
 </style>
 
 <div style="margin: 10px">
-    <form asp-action="Index" asp-route-sortState="@Model.SortViewModel.Current.ToString()" style="display:inline">
+    <form asp-action="Index" asp-all-route-data="parms" style="display:inline">
         <label>Название</label>
         <input asp-for="FilterViewModel.LablePart" value="@Model.FilterViewModel.LablePart" />
 
@@ -81,68 +81,68 @@
 
 @if (Model == null || Model.Tasks.Count() == 0)
 {
-    <p>You haven't got anything to do.</p>
+        <p>You haven't got anything to do.</p>
 }
 else
 {
-    <table>
-        <tr>
-            <td>Id</td>
-            <td>
-                <sort action="Index"
-                      page-url-values="parms"
-                      this-sort-state="@Model.SortViewModel.LableSort"
-                      selected-sort-state="@Model.SortViewModel.Next"
-                      is-asc="@Model.SortViewModel.IsAsc">
-                    Lable
-                </sort>
-            </td>
-            <td>
-                <sort action="Index"
-                      page-url-values="parms"
-                      this-sort-state="@Model.SortViewModel.DateSort"
-                      selected-sort-state="@Model.SortViewModel.Next"
-                      is-asc="@Model.SortViewModel.IsAsc">
-                    Date
-                </sort>
-            </td>
-            <td>Status</td>
-            <td>
-                <sort action="Index"
-                      page-url-values="parms"
-                      this-sort-state="@Model.SortViewModel.PrioritySort"
-                      selected-sort-state="@Model.SortViewModel.Next"
-                      is-asc="@Model.SortViewModel.IsAsc">
-                    Priority
-                </sort>
-            </td>
-            <td>Description</td>
-        </tr>
+        <table>
+            <tr>
+                <td>Id</td>
+                <td>
+                    <sort action="Index"
+                          page-url-values="parms"
+                          this-sort-state="@Model.SortViewModel.LableSort"
+                          selected-sort-state="@Model.SortViewModel.Next"
+                          is-asc="@Model.SortViewModel.IsAsc">
+                        Lable
+                    </sort>
+                </td>
+                <td>
+                    <sort action="Index"
+                          page-url-values="parms"
+                          this-sort-state="@Model.SortViewModel.DateSort"
+                          selected-sort-state="@Model.SortViewModel.Next"
+                          is-asc="@Model.SortViewModel.IsAsc">
+                        Date
+                    </sort>
+                </td>
+                <td>Status</td>
+                <td>
+                    <sort action="Index"
+                          page-url-values="parms"
+                          this-sort-state="@Model.SortViewModel.PrioritySort"
+                          selected-sort-state="@Model.SortViewModel.Next"
+                          is-asc="@Model.SortViewModel.IsAsc">
+                        Priority
+                    </sort>
+                </td>
+                <td>Description</td>
+            </tr>
 
         @foreach (var task in Model.Tasks)
         {
-            <tr>
-                <td>@task.Id</td>
-                <td>@task.Lable</td>
-                <td>@task.ExpiresDate</td>
-                <td>@task.Status</td>
-                <td>@task.Priority</td>
-                <td>@task.Description</td>
+                    <tr>
+                        <td>@task.Id</td>
+                        <td>@task.Lable</td>
+                        <td>@task.ExpiresDate</td>
+                        <td>@task.Status</td>
+                        <td>@task.Priority</td>
+                        <td>@task.Description</td>
                 @if (Model.CanEditTasks)
                 {
-                    <td>
+                                <td>
                         @Html.ActionLink("Edit", "EditTask", "Home", task)
-                    </td>
-                    <td>
+                                </td>
+                                <td>
                         @Html.ActionLink("Delete", "DeleteTask", "Home", task)
-                    </td>
+                                </td>
                 }
-            </tr>
+                    </tr>
         }
-    </table>
+        </table>
 
-    <page-link page-action="Index"
-               page-model="@Model.PageViewModel"
-               page-url-values="parms">
-    </page-link>
+        <page-link page-action="Index"
+                   page-model="@Model.PageViewModel"
+                   page-url-values="parms">
+        </page-link>
 }

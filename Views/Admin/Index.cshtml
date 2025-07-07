@@ -34,7 +34,7 @@
                 <td>@user.Role</td>
                 <td>@user.Avatar</td>
                 <td>@user.Tasks.Count</td>
-                <td>@Html.ActionLink("View tasks", "Index", "Home", new { userId = user.Id })</td>
+                <td>@Html.ActionLink("View tasks", "Index", "Home", new { UserId = user.Id })</td>
                 <td>@Html.ActionLink("Delete User", "DeleteUser", "Admin", new { userId = user.Id })</td>
             </tr>
         }

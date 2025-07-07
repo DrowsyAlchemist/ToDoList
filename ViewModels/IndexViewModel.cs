@@ -8,17 +8,16 @@ namespace ToDoList.ViewModels
         public PageViewModel PageViewModel { get; }
         public FilterViewModel FilterViewModel { get; }
         public SortViewModel SortViewModel { get; }
-        public bool IsAdmin { get; }
-        public bool CanEditTasks { get; }
+        public UserViewModel UserViewModel { get; }
+
         public IndexViewModel(IEnumerable<TaskModel> tasks, PageViewModel pageViewModel,
-            FilterViewModel filterViewModel, SortViewModel sortViewModel, bool isAdmin, bool canEditTasks)
+            FilterViewModel filterViewModel, SortViewModel sortViewModel, UserViewModel userViewModel)
         {
             Tasks = tasks;
             PageViewModel = pageViewModel;
             FilterViewModel = filterViewModel;
             SortViewModel = sortViewModel;
-            IsAdmin = isAdmin;
-            CanEditTasks = canEditTasks;
+            UserViewModel = userViewModel;
         }
     }
 }

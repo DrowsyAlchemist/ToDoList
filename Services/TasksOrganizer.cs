@@ -11,26 +11,26 @@ namespace ToDoList.Services
             FilterViewModel? filterViewModel = null,
             SortState sortState = SortState.DueDateAsc,
             PageViewModel? pageViewModel = null,
-            bool isAdmin = false,
-            bool canEditTasks = false)
+            UserViewModel? userViewModel = null)
         {
             if (filterViewModel == null)
                 filterViewModel = new FilterViewModel();
 
             var sortViewModel = new SortViewModel(sortState);
 
-            if (pageViewModel == null)
-                pageViewModel = new PageViewModel { ItemsCount = userTasks.Count() };
-            else
-                pageViewModel.ItemsCount = userTasks.Count();
-
             if (userTasks.Any())
             {
                 userTasks = FilterTasks(userTasks, filterViewModel);
                 userTasks = SortTasks(userTasks, sortViewModel);
+
+                if (pageViewModel == null)
+                    pageViewModel = new PageViewModel { ItemsCount = userTasks.Count() };
+                else
+                    pageViewModel.ItemsCount = userTasks.Count();
+
                 userTasks = Paginate(userTasks, pageViewModel);
             }
-            return new IndexViewModel(userTasks, pageViewModel, filterViewModel, sortViewModel, isAdmin, canEditTasks);
+            return new IndexViewModel(userTasks, pageViewModel, filterViewModel, sortViewModel, userViewModel);
         }
 
         private static IEnumerable<TaskModel> FilterTasks(IEnumerable<TaskModel> tasks, FilterViewModel filterViewModel)

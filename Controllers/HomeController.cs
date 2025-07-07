@@ -21,44 +21,57 @@ namespace ToDoList.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(TasksOrganizationInfo organizationInfo, string? userId = null)
+        public async Task<IActionResult> Index(TasksOrganizationInfo organizationInfo, UserViewModel userViewModel)
         {
-            //  if (organizationInfo.PageViewModel == null && organizationInfo.FilterViewModel == null)
-            //    if (TempData.ContainsKey("organizationInfo"))
-            //       organizationInfo = (TasksOrganizationInfo)TempData["organizationInfo"];
-
             foreach (var v in Request.Query)
                 _logger.LogInfo(v.Key + " - " + v.Value);
 
             UserModel currentUser = await GetCurrentUser();
-            UserModel? userToView = string.IsNullOrEmpty(userId) ? currentUser : await _users.GetById(userId);
+            UserModel? userToView = null!;
+
+            if (userViewModel != null && string.IsNullOrEmpty(userViewModel.UserId) == false)
+                userToView = await _users.GetById(userViewModel.UserId);
+            else
+                userToView = currentUser;
+
             IEnumerable<TaskModel>? userTasks = userToView.Tasks;
-            bool isAdmin = currentUser.Role == Role.Admin;
+            bool isAdminMode = currentUser.Role == Role.Admin;
             bool isUserTasksOwner = currentUser.Id.Equals(userToView.Id);
+            userViewModel.IsAdminMode = isAdminMode;
+            userViewModel.CanEditTasks = isUserTasksOwner;
 
             if (isUserTasksOwner == false)
             {
-                if (isAdmin == false)
+                if (isAdminMode == false)
                     throw new InvalidOperationException();
 
-                ViewData["Name"] = userToView.Name;
-                ViewData["Email"] = userToView.LoginData.Email;
-                ViewData["Id"] = userToView.Id;
+                userViewModel.UserId = userToView.Id;
+                userViewModel.Name = userToView.Name;
+                userViewModel.Email = userToView.LoginData.Email;
             }
-            var indexViewModel = TasksOrganizer.Organize(userTasks, organizationInfo.FilterViewModel, organizationInfo.SortState, organizationInfo.PageViewModel, isAdmin, isUserTasksOwner);
+            var indexViewModel = TasksOrganizer.Organize(userTasks, organizationInfo.FilterViewModel, organizationInfo.SortState, organizationInfo.PageViewModel, userViewModel);
             return View(indexViewModel);
         }
 
+        public async Task<IActionResult> ResetFilter(TasksOrganizationInfo organizationInfo, UserViewModel userViewModel)
+        {
+            var routeValues = new Dictionary<string, string>
+            {
+                { "sortState", organizationInfo.SortState.ToString() },
+                { "PageViewModel.ItemsPerPage", organizationInfo.PageViewModel.ItemsPerPage.ToString()},
+                { "UserId", userViewModel.UserId},
+            };
+            return RedirectToAction("Index", routeValues);
+        }
+
         [Authorize]
-        public IActionResult SetPageSize(TasksOrganizationInfo organizationInfo, int pageSize)
+        public IActionResult SetPageSize(TasksOrganizationInfo organizationInfo, int pageSize, UserViewModel userViewModel)
         {
             foreach (var v in Request.Query)
                 _logger.LogInfo(v.Key + " - " + v.Value);
 
-
             if (pageSize > 0)
                 organizationInfo.PageViewModel.ItemsPerPage = pageSize;
-            //      routeValues["PageViewModel.ItemsPerPage"] = pageSize.ToString();
 
             var routeValues = new Dictionary<string, string>
             {
@@ -70,6 +83,7 @@ namespace ToDoList.Controllers
                 { "PageViewModel.PageNumber", organizationInfo.PageViewModel.PageNumber.ToString() },
                 { "PageViewModel.ItemsCount", organizationInfo.PageViewModel.ItemsCount.ToString()},
                 { "PageViewModel.ItemsPerPage", organizationInfo.PageViewModel.ItemsPerPage.ToString()},
+                { "UserId", userViewModel.UserId},
             };
 
             return RedirectToAction("Index", routeValues);

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using ToDoList.Models;
 using ToDoList.ViewModels;
 
 namespace ToDoList.TagHelpers
@@ -16,6 +17,7 @@ namespace ToDoList.TagHelpers
         public ViewContext ViewContext { get; set; } = null!;
         public PageViewModel? PageModel { get; set; }
         public string PageAction { get; set; } = "";
+        public SortState SortState { get; set; }
         public Dictionary<string, string> PageUrlValues { get; set; } = new();
 
         public PageLinkTagHelper(IUrlHelperFactory urlHelperFactory)
@@ -60,7 +62,8 @@ namespace ToDoList.TagHelpers
             }
             else
             {
-                PageUrlValues["pageNumber"] = pageNumber.ToString();
+                PageUrlValues["PageViewModel.PageNumber"] = pageNumber.ToString();
+                PageUrlValues["sortState"] = SortState.ToString();
                 link.Attributes["href"] = urlHelper.Action(PageAction, PageUrlValues);
             }
             item.AddCssClass("page-item");

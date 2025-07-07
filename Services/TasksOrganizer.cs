@@ -10,7 +10,7 @@ namespace ToDoList.Services
             IEnumerable<TaskModel>? userTasks,
             FilterViewModel? filterViewModel = null,
             SortState sortState = SortState.DueDateAsc,
-            int pageNumber = 1,
+            PageViewModel? pageViewModel = null,
             bool isAdmin = false,
             bool canEditTasks = false)
         {
@@ -18,14 +18,16 @@ namespace ToDoList.Services
                 filterViewModel = new FilterViewModel();
 
             var sortViewModel = new SortViewModel(sortState);
-            var pageViewModel = new PageViewModel(userTasks.Count(), pageNumber, DefaultPageSize);
+
+            if (pageViewModel == null)
+                pageViewModel = new PageViewModel { ItemsCount = userTasks.Count() };
+            else
+                pageViewModel.ItemsCount = userTasks.Count();
 
             if (userTasks.Any())
             {
                 userTasks = FilterTasks(userTasks, filterViewModel);
                 userTasks = SortTasks(userTasks, sortViewModel);
-
-                pageViewModel = new PageViewModel(userTasks.Count(), pageNumber, DefaultPageSize);
                 userTasks = Paginate(userTasks, pageViewModel);
             }
             return new IndexViewModel(userTasks, pageViewModel, filterViewModel, sortViewModel, isAdmin, canEditTasks);

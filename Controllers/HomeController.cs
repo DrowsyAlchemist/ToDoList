@@ -21,12 +21,12 @@ namespace ToDoList.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(
-            FilterViewModel? filterViewModel = null,
-            SortState sortState = SortState.DueDateAsc,
-            int pageNumber = 1,
-            string? userId = null)
+        public async Task<IActionResult> Index(TasksOrganizationInfo organizationInfo, string? userId = null)
         {
+            if (organizationInfo.PageViewModel == null && organizationInfo.FilterViewModel == null)
+                if (TempData.ContainsKey("organizationInfo"))
+                    organizationInfo = (TasksOrganizationInfo)TempData["organizationInfo"];
+
             foreach (var v in Request.Query)
                 _logger.LogInfo(v.Key + " - " + v.Value);
 
@@ -34,19 +34,31 @@ namespace ToDoList.Controllers
             UserModel? userToView = string.IsNullOrEmpty(userId) ? currentUser : await _users.GetById(userId);
             IEnumerable<TaskModel>? userTasks = userToView.Tasks;
             bool isAdmin = currentUser.Role == Role.Admin;
-            bool canEditTasks = currentUser.Id.Equals(userToView.Id);
+            bool isUserTasksOwner = currentUser.Id.Equals(userToView.Id);
 
-            if (isAdmin && (canEditTasks == false))
+            if (isUserTasksOwner == false)
             {
+                if (isAdmin == false)
+                    throw new InvalidOperationException();
+
                 ViewData["Name"] = userToView.Name;
                 ViewData["Email"] = userToView.LoginData.Email;
                 ViewData["Id"] = userToView.Id;
             }
-            var indexViewModel = TasksOrganizer.Organize(userTasks, filterViewModel, sortState, pageNumber, isAdmin, canEditTasks);
+            var indexViewModel = TasksOrganizer.Organize(userTasks, organizationInfo.FilterViewModel, organizationInfo.SortState, organizationInfo.PageViewModel, isAdmin, isUserTasksOwner);
             return View(indexViewModel);
         }
 
+        [Authorize]
+        public IActionResult SetPageSize(TasksOrganizationInfo organizationInfo, int pageSize)
+        {
+            if (pageSize > 0)
+                organizationInfo.PageViewModel.ItemsPerPage = pageSize;
 
+            TempData["organizationInfo"] = organizationInfo;
+
+            return RedirectToAction("Index");
+        }
 
         [Authorize]
         public IActionResult EditTask(TaskModel task)

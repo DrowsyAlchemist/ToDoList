@@ -7,20 +7,23 @@
 @{
     var parms = new Dictionary<string, string>
             {
-                { "lablePart", Model.FilterViewModel.LablePart },
-                { "selectedDateScope", Model.FilterViewModel.SelectedDateScope.ToString() },
-                { "selectedStatus", (Model.FilterViewModel.SelectedStatus.HasValue)?Model.FilterViewModel.SelectedStatus.Value.ToString():"null" },
-                { "selectedPriority",(Model.FilterViewModel.SelectedPriority.HasValue)?Model.FilterViewModel.SelectedPriority.Value.ToString():"null" },
+                { "FilterViewModel.LablePart", Model.FilterViewModel.LablePart },
+                { "FilterViewModel.SelectedDateScope", Model.FilterViewModel.SelectedDateScope.ToString() },
+                { "FilterViewModel.SelectedStatus", (Model.FilterViewModel.SelectedStatus.HasValue)?Model.FilterViewModel.SelectedStatus.Value.ToString():"null" },
+                { "FilterViewModel.SelectedPriority",(Model.FilterViewModel.SelectedPriority.HasValue)?Model.FilterViewModel.SelectedPriority.Value.ToString():"null" },
                 { "sortState", Model.SortViewModel.Current.ToString() },
-                { "pageNumber", Model.PageViewModel.PageNumber.ToString()}
+                { "PageViewModel.PageNumber", Model.PageViewModel.PageNumber.ToString() },
+                { "PageViewModel.ItemsCount", Model.Tasks.Count().ToString()},
+                { "PageViewModel.ItemsPerPage", Model.PageViewModel.ItemsPerPage.ToString()},
             };
+    var viewModel = Model;
 }
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
 
 <style>
     td, th {
-        padding: 0 13px 0 0;
+        padding: 10px;
     }
 
     .glyphicon {
@@ -39,12 +42,6 @@
     .glyphicon-chevron-up {
         transform: rotate(-135deg);
         -webkit-transform: rotate(-135deg);
-    }
-</style>
-
-<style>
-    td {
-        padding: 10px;
     }
 </style>
 

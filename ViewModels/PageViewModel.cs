@@ -1,10 +1,12 @@
 ﻿namespace ToDoList.ViewModels
 {
+    [Serializable]
     public class PageViewModel
     {
-        public int PageNumber { get; }
-        public int TotalPages { get; }
-        public int ItemsPerPage {  get; }
+        public int PageNumber { get; set; } = 1;
+        public int ItemsPerPage { get; set; } = 10;
+        public int ItemsCount { get; set; }
+        public int TotalPages => (int)Math.Ceiling(ItemsCount / (double)ItemsPerPage);
         public bool HasPreviousPage => PageNumber > 1;
         public bool HasNextPage => PageNumber < TotalPages;
 
@@ -12,7 +14,12 @@
         {
             PageNumber = pageNumber;
             ItemsPerPage = itemsPerPage;
-            TotalPages = (int)Math.Ceiling(itemsCount / (double)itemsPerPage);
+            ItemsCount = itemsCount;
+        }
+
+        public PageViewModel()
+        {
+
         }
     }
 }

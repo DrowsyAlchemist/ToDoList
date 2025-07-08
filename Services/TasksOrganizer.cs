@@ -7,30 +7,26 @@ namespace ToDoList.Services
     {
         private const int DefaultPageSize = 10;
         public static IndexViewModel Organize(
-            IEnumerable<TaskModel>? userTasks,
-            FilterViewModel? filterViewModel = null,
-            SortState sortState = SortState.DueDateAsc,
-            PageViewModel? pageViewModel = null,
-            UserViewModel? userViewModel = null)
+            IEnumerable<TaskModel> userTasks,
+            TasksOrganizationInfo organizationInfo,
+            UserViewModel userViewModel)
         {
-            if (filterViewModel == null)
-                filterViewModel = new FilterViewModel();
-
-            var sortViewModel = new SortViewModel(sortState);
+            if (organizationInfo.FilterViewModel == null)
+                organizationInfo.FilterViewModel = new FilterViewModel();
 
             if (userTasks.Any())
             {
-                userTasks = FilterTasks(userTasks, filterViewModel);
-                userTasks = SortTasks(userTasks, sortViewModel);
+                userTasks = FilterTasks(userTasks, organizationInfo.FilterViewModel);
+                userTasks = SortTasks(userTasks, organizationInfo.SortState);
 
-                if (pageViewModel == null)
-                    pageViewModel = new PageViewModel { ItemsCount = userTasks.Count() };
+                if (organizationInfo.PageViewModel == null)
+                    organizationInfo.PageViewModel = new PageViewModel { ItemsCount = userTasks.Count() };
                 else
-                    pageViewModel.ItemsCount = userTasks.Count();
+                    organizationInfo.PageViewModel.ItemsCount = userTasks.Count();
 
-                userTasks = Paginate(userTasks, pageViewModel);
+                userTasks = Paginate(userTasks, organizationInfo.PageViewModel);
             }
-            return new IndexViewModel(userTasks, pageViewModel, filterViewModel, sortViewModel, userViewModel);
+            return new IndexViewModel(userTasks, organizationInfo, userViewModel);
         }
 
         private static IEnumerable<TaskModel> FilterTasks(IEnumerable<TaskModel> tasks, FilterViewModel filterViewModel)
@@ -50,9 +46,9 @@ namespace ToDoList.Services
             return tasks;
         }
 
-        private static IEnumerable<TaskModel> SortTasks(IEnumerable<TaskModel> tasks, SortViewModel sortViewModel)
+        private static IEnumerable<TaskModel> SortTasks(IEnumerable<TaskModel> tasks, SortState sortState)
         {
-            tasks = sortViewModel.Current switch
+            tasks = sortState switch
             {
                 SortState.LableAsc => tasks.OrderBy(t => t.Lable),
                 SortState.LableDesc => tasks.OrderByDescending(t => t.Lable),

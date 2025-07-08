@@ -10,13 +10,18 @@ namespace ToDoList.ViewModels
         public SortViewModel SortViewModel { get; }
         public UserViewModel UserViewModel { get; }
 
-        public IndexViewModel(IEnumerable<TaskModel> tasks, PageViewModel pageViewModel,
-            FilterViewModel filterViewModel, SortViewModel sortViewModel, UserViewModel userViewModel)
+        public IndexViewModel(IEnumerable<TaskModel> tasks, TasksOrganizationInfo organizationInfo, UserViewModel userViewModel)
         {
+            if (organizationInfo.FilterViewModel == null)
+                throw new ArgumentNullException(nameof(organizationInfo.FilterViewModel));
+
+            if (organizationInfo.PageViewModel == null)
+                throw new ArgumentNullException(nameof(organizationInfo.PageViewModel));
+
             Tasks = tasks;
-            PageViewModel = pageViewModel;
-            FilterViewModel = filterViewModel;
-            SortViewModel = sortViewModel;
+            FilterViewModel = organizationInfo.FilterViewModel;
+            SortViewModel = new SortViewModel(organizationInfo.SortState);
+            PageViewModel = organizationInfo.PageViewModel;
             UserViewModel = userViewModel;
         }
     }

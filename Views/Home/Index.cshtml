@@ -19,11 +19,11 @@
 <body>
     @if (Model.UserViewModel.IsAdminMode)
     {
-        <div style="margin: 10px">
+        <div>
             <a href="/Admin/Index">Admin Page</a>
         </div>
 
-        @if (Model.UserViewModel.CanEditTasks == false)
+        @if (Model.UserViewModel.IsUserTasksOwner == false)
         {
             <div style="padding: 10px">
                 <h2>Admin mode</h2>
@@ -46,10 +46,10 @@
     }
 
     <div style="margin-bottom:20px">
-        <h2 style="display: inline; padding: 10px">To Do List</h2>
-        @if (Model.UserViewModel.CanEditTasks)
+        <h2 style="display: inline">To Do List</h2>
+        @if (Model.UserViewModel.IsUserTasksOwner)
         {
-            <span><a href="/Home/CreateTask">Add</a></span>
+            <span style="margin-left: 20px"><a href="/Home/CreateTask">Add</a></span>
         }
     </div>
 

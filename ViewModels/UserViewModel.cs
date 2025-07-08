@@ -6,6 +6,6 @@
         public string Name { get; set; }
         public string Email { get; set; }
         public bool IsAdminMode { get; set; }
-        public bool CanEditTasks { get; set; }
+        public bool IsUserTasksOwner { get; set; }
     }
 }

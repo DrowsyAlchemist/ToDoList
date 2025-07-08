@@ -27,66 +27,49 @@ namespace ToDoList.Controllers
                 _logger.LogInfo(v.Key + " - " + v.Value);
 
             UserModel currentUser = await GetCurrentUser();
-            UserModel? userToView = null!;
+            UserModel userToView;
 
-            if (userViewModel != null && string.IsNullOrEmpty(userViewModel.UserId) == false)
+            if (string.IsNullOrEmpty(userViewModel.UserId) == false)
                 userToView = await _users.GetById(userViewModel.UserId);
             else
                 userToView = currentUser;
 
             IEnumerable<TaskModel>? userTasks = userToView.Tasks;
-            bool isAdminMode = currentUser.Role == Role.Admin;
-            bool isUserTasksOwner = currentUser.Id.Equals(userToView.Id);
-            userViewModel.IsAdminMode = isAdminMode;
-            userViewModel.CanEditTasks = isUserTasksOwner;
 
-            if (isUserTasksOwner == false)
+            userViewModel.IsAdminMode = currentUser.Role == Role.Admin;
+            userViewModel.IsUserTasksOwner = currentUser.Id.Equals(userToView.Id);
+
+            if (userViewModel.IsUserTasksOwner == false)
             {
-                if (isAdminMode == false)
+                if (userViewModel.IsAdminMode == false)
                     throw new InvalidOperationException();
 
                 userViewModel.UserId = userToView.Id;
                 userViewModel.Name = userToView.Name;
                 userViewModel.Email = userToView.LoginData.Email;
             }
-            var indexViewModel = TasksOrganizer.Organize(userTasks, organizationInfo.FilterViewModel, organizationInfo.SortState, organizationInfo.PageViewModel, userViewModel);
-            return View(indexViewModel);
+            var indexViewModel = TasksOrganizer.Organize(userTasks, organizationInfo, userViewModel);
+            return View("Index", indexViewModel);
         }
 
         public async Task<IActionResult> ResetFilter(TasksOrganizationInfo organizationInfo, UserViewModel userViewModel)
         {
-            var routeValues = new Dictionary<string, string>
-            {
-                { "sortState", organizationInfo.SortState.ToString() },
-                { "PageViewModel.ItemsPerPage", organizationInfo.PageViewModel.ItemsPerPage.ToString()},
-                { "UserId", userViewModel.UserId},
-            };
-            return RedirectToAction("Index", routeValues);
+            organizationInfo.FilterViewModel = null;
+            organizationInfo.PageViewModel = new PageViewModel { ItemsPerPage = organizationInfo.PageViewModel.ItemsPerPage };
+            userViewModel = new UserViewModel { UserId = userViewModel.UserId };
+            return await Index(organizationInfo, userViewModel);
         }
 
         [Authorize]
-        public IActionResult SetPageSize(TasksOrganizationInfo organizationInfo, int pageSize, UserViewModel userViewModel)
+        public async Task<IActionResult> SetPageSize(TasksOrganizationInfo organizationInfo, int pageSize, UserViewModel userViewModel)
         {
             foreach (var v in Request.Query)
                 _logger.LogInfo(v.Key + " - " + v.Value);
 
             if (pageSize > 0)
-                organizationInfo.PageViewModel.ItemsPerPage = pageSize;
+                organizationInfo.PageViewModel = new PageViewModel { ItemsPerPage = pageSize };
 
-            var routeValues = new Dictionary<string, string>
-            {
-                { "FilterViewModel.LablePart", organizationInfo.FilterViewModel.LablePart },
-                { "FilterViewModel.SelectedDateScope", organizationInfo.FilterViewModel.SelectedDateScope.ToString() },
-                { "FilterViewModel.SelectedStatus", (organizationInfo.FilterViewModel.SelectedStatus.HasValue)?organizationInfo.FilterViewModel.SelectedStatus.Value.ToString():"null" },
-                { "FilterViewModel.SelectedPriority",(organizationInfo.FilterViewModel.SelectedPriority.HasValue)?organizationInfo.FilterViewModel.SelectedPriority.Value.ToString():"null" },
-                { "sortState", organizationInfo.SortState.ToString() },
-                { "PageViewModel.PageNumber", organizationInfo.PageViewModel.PageNumber.ToString() },
-                { "PageViewModel.ItemsCount", organizationInfo.PageViewModel.ItemsCount.ToString()},
-                { "PageViewModel.ItemsPerPage", organizationInfo.PageViewModel.ItemsPerPage.ToString()},
-                { "UserId", userViewModel.UserId},
-            };
-
-            return RedirectToAction("Index", routeValues);
+            return await Index(organizationInfo, userViewModel);
         }
 
         [Authorize]

@@ -27,7 +27,6 @@ namespace ToDoList.Controllers
                 _logger.LogError("User is not found or is not authenticated");
                 return Unauthorized();
             }
-
             string? email = user.Identity.Name;
 
             if (email == null)

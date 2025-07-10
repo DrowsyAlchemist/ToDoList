@@ -31,15 +31,5 @@ namespace ToDoList.Controllers
             await _users.DeleteUser(userId);
             return RedirectToAction("Index");
         }
-
-        public async Task<IActionResult> ViewUserTasks(string userId)
-        {
-            foreach (var v in Request.Query)
-                _logger.LogInfo(v.Key + " - " + v.Value);
-
-            var userInDb = await _users.GetById(userId);
-            return View(userInDb);
-        }
-
     }
 }

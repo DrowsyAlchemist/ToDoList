@@ -21,17 +21,18 @@
     <a asp-controller="Login" asp-action="Logout">Logout</a>
     @using (Html.BeginForm())
     {
-        <p>
+        <p hidden>
             @Html.LabelFor(m => m.Id)
             @Html.EditorFor(m => m.Id)
         </p>
         <p>
-            @Html.LabelFor(m => m.Name)
-            @Html.EditorFor(m => m.Name)
+            @Html.LabelFor(m => m.Role)
+            @Html.DisplayFor(m => m.Role)
+            <span hidden>@Html.EditorFor(m => m.Role)</span>
         </p>
         <p>
-            @Html.LabelFor(m => m.Role)
-            @Html.EditorFor(m => m.Role)
+            @Html.LabelFor(m => m.Name)
+            @Html.EditorFor(m => m.Name)
         </p>
         <p>
             @Html.LabelFor(m => m.LoginData.Email)
@@ -39,7 +40,7 @@
         </p>
         <p>
             @Html.LabelFor(m => m.LoginData.Password)
-            @Html.EditorFor(m => m.LoginData.Password)
+            @Html.PasswordFor(m => m.LoginData.Password)
         </p>
         <p>
             @Html.LabelFor(m => m.Avatar)

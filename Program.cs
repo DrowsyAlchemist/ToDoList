@@ -3,9 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using ToDoList.DataBase;
 using ToDoList.Infrastructure;
 using ToDoList.Logger;
+using ToDoList.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddJsonFile("Config.json"); // Конфигурация
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllersWithViews(opts =>
 {
@@ -28,7 +30,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddTransient<UserRepository>();
 builder.Services.AddTransient<TaskRepository>();
 builder.Services.AddSingleton<AppLogger>(); // Логгирование
-
+builder.Services.AddSingleton<TasksOrganizer>();
 
 var app = builder.Build();
 

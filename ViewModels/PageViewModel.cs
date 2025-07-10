@@ -1,6 +1,5 @@
 ﻿namespace ToDoList.ViewModels
 {
-    [Serializable]
     public class PageViewModel
     {
         public int PageNumber { get; set; } = 1;

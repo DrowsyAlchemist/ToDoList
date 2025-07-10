@@ -3,33 +3,33 @@ using ToDoList.ViewModels;
 
 namespace ToDoList.Services
 {
-    public static class TasksOrganizer
+    public class TasksOrganizer
     {
-        private const int DefaultPageSize = 10;
-        public static IndexViewModel Organize(
+        public IndexViewModel Organize(
             IEnumerable<TaskModel> userTasks,
             TasksOrganizationInfo organizationInfo,
             UserViewModel userViewModel)
         {
-            if (organizationInfo.FilterViewModel == null)
-                organizationInfo.FilterViewModel = new FilterViewModel();
-
             if (userTasks.Any())
             {
-                userTasks = FilterTasks(userTasks, organizationInfo.FilterViewModel);
+                if (organizationInfo.FilterViewModel == null)
+                    organizationInfo.FilterViewModel = new FilterViewModel();
+                else
+                    userTasks = FilterTasks(userTasks, organizationInfo.FilterViewModel);
+
                 userTasks = SortTasks(userTasks, organizationInfo.SortState);
 
                 if (organizationInfo.PageViewModel == null)
-                    organizationInfo.PageViewModel = new PageViewModel { ItemsCount = userTasks.Count() };
-                else
-                    organizationInfo.PageViewModel.ItemsCount = userTasks.Count();
+                    organizationInfo.PageViewModel = new PageViewModel();
+
+                organizationInfo.PageViewModel.ItemsCount = userTasks.Count();
 
                 userTasks = Paginate(userTasks, organizationInfo.PageViewModel);
             }
             return new IndexViewModel(userTasks, organizationInfo, userViewModel);
         }
 
-        private static IEnumerable<TaskModel> FilterTasks(IEnumerable<TaskModel> tasks, FilterViewModel filterViewModel)
+        private IEnumerable<TaskModel> FilterTasks(IEnumerable<TaskModel> tasks, FilterViewModel filterViewModel)
         {
             if (string.IsNullOrEmpty(filterViewModel.LablePart) == false)
                 tasks = tasks.Where(t => t.Lable.Contains(filterViewModel.LablePart));
@@ -46,7 +46,7 @@ namespace ToDoList.Services
             return tasks;
         }
 
-        private static IEnumerable<TaskModel> SortTasks(IEnumerable<TaskModel> tasks, SortState sortState)
+        private IEnumerable<TaskModel> SortTasks(IEnumerable<TaskModel> tasks, SortState sortState)
         {
             tasks = sortState switch
             {
@@ -61,7 +61,20 @@ namespace ToDoList.Services
             return tasks;
         }
 
-        private static IEnumerable<TaskModel> FilterByDate(IEnumerable<TaskModel> tasks, ViewDateScope dateScope)
+        private IEnumerable<TaskModel> Paginate(IEnumerable<TaskModel> tasks, PageViewModel pageViewModel)
+        {
+            int skipCount = (pageViewModel.PageNumber - 1) * pageViewModel.ItemsPerPage;
+
+            if (skipCount >= tasks.Count())
+            {
+                pageViewModel.PageNumber = 1;
+                skipCount = 0;
+            }
+            tasks = tasks.Skip(skipCount).Take(pageViewModel.ItemsPerPage);
+            return tasks;
+        }
+
+        private IEnumerable<TaskModel> FilterByDate(IEnumerable<TaskModel> tasks, ViewDateScope dateScope)
         {
             var now = DateTime.Now;
 
@@ -76,13 +89,6 @@ namespace ToDoList.Services
                 ViewDateScope.All => tasks,
                 _ => throw new NotImplementedException(),
             };
-            return tasks;
-        }
-
-        private static IEnumerable<TaskModel> Paginate(IEnumerable<TaskModel> tasks, PageViewModel pageViewModel)
-        {
-            int skipCount = (pageViewModel.PageNumber - 1) * pageViewModel.ItemsPerPage;
-            tasks = tasks.Skip(skipCount).Take(pageViewModel.ItemsPerPage);
             return tasks;
         }
     }

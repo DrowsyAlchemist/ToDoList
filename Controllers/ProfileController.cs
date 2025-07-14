@@ -23,24 +23,27 @@ namespace ToDoList.Controllers
             var user = HttpContext.User;
 
             if (user == null || user.Identity == null || user.Identity.IsAuthenticated == false)
-            {
-                _logger.LogError("User is not found or is not authenticated");
-                return Unauthorized();
-            }
+                return RedirectToAction("Index", "Error", new { message = "User is not found or is not authenticated" });
+
             string? email = user.Identity.Name;
 
             if (email == null)
+                return RedirectToAction("Index", "Error", new { message = "User's email is null." });
+
+            UserModel? currentUser = null;
+
+            try
             {
-                _logger.LogError("User's email is null.");
-                return Unauthorized();
+                currentUser = await _users.GetByEmail(email);
             }
-            var currentUser = await _users.GetByEmail(email);
+            catch (Exception ex)
+            {
+                return RedirectToAction("Index", "Error", new { message = ex.Message, stackTrace = ex.StackTrace });
+            }
 
             if (currentUser == null)
-            {
-                _logger.LogError($"User with email \"{email}\" is not found.");
-                return Unauthorized();
-            }
+                RedirectToAction("Index", "Error", new { message = $"User with email \"{email}\" is not found." });
+
             return View(currentUser);
         }
 
@@ -48,7 +51,14 @@ namespace ToDoList.Controllers
         [Authorize]
         public async Task<IActionResult> Index(UserModel editedUser)
         {
-            await _users.UpdateUser(editedUser);
+            try
+            {
+                await _users.UpdateUser(editedUser);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Index", "Error", new { message = ex.Message, stackTrace = ex.StackTrace });
+            }
             return View(editedUser);
         }
     }

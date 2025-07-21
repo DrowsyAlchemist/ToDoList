@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using ToDoList.ViewModels
+@model LoginViewModel
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -20,5 +23,6 @@
         </p>
         <input type="submit" value="Login" />
     </form>
+    <h4 style="color:red">@Model?.ErrorMessage</h4>
 </body>
 </html>

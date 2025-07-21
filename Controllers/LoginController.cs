@@ -5,6 +5,7 @@ using ToDoList.DataBase;
 using ToDoList.Logger;
 using ToDoList.Models;
 using Microsoft.AspNetCore.Authentication;
+using ToDoList.ViewModels;
 
 namespace ToDoList.Controllers
 {
@@ -35,57 +36,34 @@ namespace ToDoList.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginData loginData)
         {
-            if (loginData == null)
-            {
-                _logger.LogWarning("loginData is null.");
-                return View();
-            }
             if (string.IsNullOrEmpty(loginData.Email))
             {
                 _logger.LogWarning("Email is null or empty.");
-                return View();
+                return View(new LoginViewModel { ErrorMessage = "Email is empty." });
             }
             if (string.IsNullOrEmpty(loginData.Password))
             {
                 _logger.LogWarning("Password is null or empty.");
-                return View();
+                return View(new LoginViewModel { ErrorMessage = "Password is empty." });
             }
             var userInDb = await _users.GetByEmail(loginData.Email);
 
             if (userInDb == null)
             {
                 _logger.LogWarning($"{loginData.Email} could not logged in. User has not found.");
-                //return LocalRedirect("/Login/Login");
-                return Unauthorized();
+                return View(new LoginViewModel { ErrorMessage = $"User with email \"{loginData.Email}\" has not found." });
             }
             if (userInDb.LoginData.Password.Equals(loginData.Password) == false)
             {
                 _logger.LogWarning($"{loginData.Email} could not logged in. Password is incorrect.");
-                return LocalRedirect("/Login/Login");
+                return View(new LoginViewModel { ErrorMessage = "Incorrect password" });
             }
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, loginData.Email) ,
-                new Claim(ClaimTypes.Role, userInDb.Role),
-            };
-            // создаем объект ClaimsIdentity
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Cookies");
-            // установка аутентификационных куки
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity));
-            _logger.LogInfo($"{loginData.Email} has successfully logged in.");
-            return LocalRedirect("/Home/Index");
+            return await LogUserIn(loginData, userInDb.Role);
         }
 
         [HttpPost]
         public async Task<IActionResult> SignUp(UserModel userModel)
         {
-            string form = "";
-            foreach (var item in Request.Form)
-            {
-                form += $"{item.Key} - {item.Value}\n";
-            }
-            _logger.LogWarning(form);
             var loginData = userModel.LoginData;
 
             if (loginData == null)
@@ -113,19 +91,7 @@ namespace ToDoList.Controllers
 
             userModel.Role = Role.User;
             await _users.AddUser(userModel);
-
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, loginData.Email) ,
-                new Claim(ClaimTypes.Role, Role.User),
-            };
-            // создаем объект ClaimsIdentity
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Cookies");
-            // установка аутентификационных куки
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity));
-            _logger.LogInfo($"{loginData.Email} has successfully logged in.");
-            return LocalRedirect("/Home/Index");
+            return await LogUserIn(loginData, Role.User);
         }
 
         public async Task<IActionResult> Logout()
@@ -140,6 +106,22 @@ namespace ToDoList.Controllers
             var path = HttpContext.Request.Path;
             _logger.LogWarning($"Access denied.\nPath: {path}\nUser: {user?.Name}\nAdmin: {HttpContext.User.IsInRole(Role.Admin)}");
             return View();
+        }
+
+        private async Task<IActionResult> LogUserIn(LoginData loginData, string role)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, loginData.Email) ,
+                new Claim(ClaimTypes.Role, role),
+            };
+            // создаем объект ClaimsIdentity
+            ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Cookies");
+            // установка аутентификационных куки
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity));
+            _logger.LogInfo($"{loginData.Email} has successfully logged in.");
+            return LocalRedirect("/Home/Index");
         }
 
         private void InitDataBase(ApplicationDbContext db)

@@ -23,12 +23,12 @@ namespace ToDoList.Controllers
             _logger = logger;
         }
 
-        public IActionResult Login()
+        public ViewResult Login()
         {
             return View();
         }
 
-        public IActionResult SignUp()
+        public ViewResult SignUp()
         {
             return View();
         }
@@ -37,27 +37,20 @@ namespace ToDoList.Controllers
         public async Task<IActionResult> Login(LoginData loginData)
         {
             if (string.IsNullOrEmpty(loginData.Email))
-            {
-                _logger.LogWarning("Email is null or empty.");
-                return View(new LoginViewModel { ErrorMessage = "Email is empty." });
-            }
+                return ViewLogInWarning("Email is empty.", "Email is null or empty.");
+
             if (string.IsNullOrEmpty(loginData.Password))
-            {
-                _logger.LogWarning("Password is null or empty.");
-                return View(new LoginViewModel { ErrorMessage = "Password is empty." });
-            }
+                return ViewLogInWarning("Password is empty.", "Password is null or empty.");
+
             var userInDb = await _users.GetByEmail(loginData.Email);
 
             if (userInDb == null)
-            {
-                _logger.LogWarning($"{loginData.Email} could not logged in. User has not found.");
-                return View(new LoginViewModel { ErrorMessage = $"User with email \"{loginData.Email}\" has not found." });
-            }
+                return ViewLogInWarning($"User with email \"{loginData.Email}\" has not found.",
+                    $"{loginData.Email} could not logged in. User has not found.");
+
             if (userInDb.LoginData.Password.Equals(loginData.Password) == false)
-            {
-                _logger.LogWarning($"{loginData.Email} could not logged in. Password is incorrect.");
-                return View(new LoginViewModel { ErrorMessage = "Incorrect password" });
-            }
+                return ViewLogInWarning("Incorrect password", $"{loginData.Email} could not logged in. Password is incorrect.");
+
             return await LogUserIn(loginData, userInDb.Role);
         }
 
@@ -67,27 +60,18 @@ namespace ToDoList.Controllers
             var loginData = userModel.LoginData;
 
             if (loginData == null)
-            {
-                _logger.LogWarning("loginData is null.");
-                return View();
-            }
+                return ViewSignUpWarning("loginData is null.");
+
             if (string.IsNullOrEmpty(loginData.Email))
-            {
-                _logger.LogWarning("Email is null or empty.");
-                return View();
-            }
+                return ViewSignUpWarning("Email is null or empty.");
+
             if (string.IsNullOrEmpty(loginData.Password))
-            {
-                _logger.LogWarning("Password is null or empty.");
-                return View();
-            }
+                return ViewSignUpWarning("Password is null or empty.");
+
             var userInDb = await _users.GetByEmail(loginData.Email);
 
             if (userInDb != null)
-            {
-                _logger.LogWarning($"{loginData.Email} could not signed up. User already exists.");
-                return View();
-            }
+                return ViewSignUpWarning($"{loginData.Email} could not signed up. User already exists.");
 
             userModel.Role = Role.User;
             await _users.AddUser(userModel);
@@ -100,12 +84,29 @@ namespace ToDoList.Controllers
             return LocalRedirect("/Login/Login");
         }
 
-        public IActionResult DenyAccess()
+        public ViewResult DenyAccess()
         {
             var user = HttpContext.User.Identity;
             var path = HttpContext.Request.Path;
             _logger.LogWarning($"Access denied.\nPath: {path}\nUser: {user?.Name}\nAdmin: {HttpContext.User.IsInRole(Role.Admin)}");
             return View();
+        }
+
+        private ViewResult ViewLogInWarning(string message, string? logMessage = null)
+        {
+            if (logMessage != null)
+                _logger.LogWarning(logMessage);
+
+            var loginViewModel = new LoginViewModel { ErrorMessage = message };
+            return View("Login", loginViewModel);
+        }
+
+        private ViewResult ViewSignUpWarning(string? logMessage = null)
+        {
+            if (logMessage != null)
+                _logger.LogWarning(logMessage);
+
+            return View("SignUp");
         }
 
         private async Task<IActionResult> LogUserIn(LoginData loginData, string role)

@@ -10,20 +10,18 @@ namespace ToDoList.Services
             TasksOrganizationInfo organizationInfo,
             UserViewModel userViewModel)
         {
+            if (organizationInfo.FilterViewModel == null)
+                organizationInfo.FilterViewModel = new FilterViewModel();
+
+            if (organizationInfo.PageViewModel == null)
+                organizationInfo.PageViewModel = new PageViewModel();
+
             if (userTasks.Any())
             {
-                if (organizationInfo.FilterViewModel == null)
-                    organizationInfo.FilterViewModel = new FilterViewModel();
-                else
-                    userTasks = FilterTasks(userTasks, organizationInfo.FilterViewModel);
-
+                userTasks = FilterTasks(userTasks, organizationInfo.FilterViewModel);
                 userTasks = SortTasks(userTasks, organizationInfo.SortState);
 
-                if (organizationInfo.PageViewModel == null)
-                    organizationInfo.PageViewModel = new PageViewModel();
-
                 organizationInfo.PageViewModel.ItemsCount = userTasks.Count();
-
                 userTasks = Paginate(userTasks, organizationInfo.PageViewModel);
             }
             return new IndexViewModel(userTasks, organizationInfo, userViewModel);

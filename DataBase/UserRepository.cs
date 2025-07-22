@@ -118,7 +118,9 @@ namespace ToDoList.DataBase
         public async Task<TaskModel> DeleteTask(TaskModel task)
         {
             ArgumentNullException.ThrowIfNull(task);
-            var user = await _users.FirstOrDefaultAsync(u => u.Id.Equals(task.UserId));
+            var user = await _users
+                .Include(u => u.Tasks)
+                .FirstOrDefaultAsync(u => u.Id.Equals(task.UserId));
             ArgumentNullException.ThrowIfNull(user);
             var taskToRemove = user.Tasks.FirstOrDefault(t => t.Id == task.Id);
             ArgumentNullException.ThrowIfNull(taskToRemove);

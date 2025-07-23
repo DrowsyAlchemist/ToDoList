@@ -23,8 +23,11 @@ namespace ToDoList.Controllers
             _logger = logger;
         }
 
-        public ViewResult Login()
+        public IActionResult Login()
         {
+            if (HttpContext.User.Identity != null && HttpContext.User.Identity.IsAuthenticated)
+                return LocalRedirect("/Home/Index");
+
             return View();
         }
 

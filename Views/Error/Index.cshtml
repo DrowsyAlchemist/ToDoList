@@ -7,6 +7,15 @@
 <body>
     <h2>Oops... An error has been occurred </h2>
     <hr />
-    <p><b>Message: </b>@Model.Message</p>
-    <p><b>StackTrace: </b>@Model.StackTrace</p>
+    @if (Model != null)
+    {
+        if (string.IsNullOrEmpty(Model.Message) == false)
+        {
+            <p><b>Message: </b>@Model.Message</p>
+        }
+        if (string.IsNullOrEmpty(Model.StackTrace) == false)
+        {
+            <p><b>StackTrace: </b>@Model.StackTrace</p>
+        }
+    }
 </body>

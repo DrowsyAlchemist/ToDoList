@@ -32,6 +32,9 @@ namespace ToDoList.Controllers
             else
                 userToView = currentUser;
 
+            if (userToView == null)
+                return RedirectToAction("Index", "Error", new { message = "UserToView is not found." });
+
             IEnumerable<TaskModel>? userTasks = userToView.Tasks;
 
             userViewModel.IsAdminMode = currentUser.Role == Role.Admin;
@@ -53,7 +56,13 @@ namespace ToDoList.Controllers
         public async Task<IActionResult> ResetFilter(TasksOrganizationInfo organizationInfo, UserViewModel userViewModel)
         {
             organizationInfo.FilterViewModel = null;
-            organizationInfo.PageViewModel = new PageViewModel { ItemsPerPage = organizationInfo.PageViewModel.ItemsPerPage };
+
+            int? itemsPerPage = organizationInfo.PageViewModel?.ItemsPerPage;
+            organizationInfo.PageViewModel = new PageViewModel();
+
+            if (itemsPerPage != null)
+                organizationInfo.PageViewModel.ItemsPerPage = itemsPerPage.Value;
+
             userViewModel = new UserViewModel { UserId = userViewModel.UserId };
             return await Index(organizationInfo, userViewModel);
         }
@@ -110,8 +119,20 @@ namespace ToDoList.Controllers
         private async Task<UserModel> GetCurrentUser()
         {
             var userInApp = HttpContext.User.Identity;
-            var currentUser = await _users.GetByEmail(userInApp.Name);
-            return currentUser;
+
+            if (userInApp == null)
+            {
+                _logger.LogError("HomeController/GetCurrentUser: User is null.");
+                throw new InvalidOperationException("User is null.");
+            }
+            var userInDb = await _users.GetByEmail(userInApp.Name);
+
+            if (userInDb == null)
+            {
+                _logger.LogError("HomeController/GetCurrentUser: UserInDb is null.");
+                throw new InvalidOperationException("UserInDb is null.");
+            }
+            return userInDb;
         }
 
         private void ValidateTask(Func<bool> condition)

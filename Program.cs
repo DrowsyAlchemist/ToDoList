@@ -40,6 +40,8 @@ app.UseAuthorization();   // добавление middleware авторизации
 
 if (app.Environment.IsDevelopment()) // Обработка ошибок
     app.UseDeveloperExceptionPage();
+else
+    app.UseExceptionHandler("/Error/Index");
 
 app.MapControllerRoute(
     name: "default",

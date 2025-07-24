@@ -5,7 +5,7 @@ using ToDoList.DataBase;
 using ToDoList.Logger;
 using ToDoList.Models;
 using Microsoft.AspNetCore.Authentication;
-using ToDoList.ViewModels;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace ToDoList.Controllers
 {
@@ -39,20 +39,16 @@ namespace ToDoList.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginData loginData)
         {
-            if (string.IsNullOrEmpty(loginData.Email))
-                return ViewLogInWarning("Email is empty.", "Email is null or empty.");
-
-            if (string.IsNullOrEmpty(loginData.Password))
-                return ViewLogInWarning("Password is empty.", "Password is null or empty.");
+            if (ModelState.IsValid == false)
+                return ViewValidationError("Login");
 
             var userInDb = await _users.GetByEmail(loginData.Email);
 
             if (userInDb == null)
-                return ViewLogInWarning($"User with email \"{loginData.Email}\" has not found.",
-                    $"{loginData.Email} could not logged in. User has not found.");
+                return ViewWarning("Login", $"User with email \"{loginData.Email}\" has not found.");
 
             if (userInDb.LoginData.Password.Equals(loginData.Password) == false)
-                return ViewLogInWarning("Incorrect password", $"{loginData.Email} could not logged in. Password is incorrect.");
+                return ViewWarning("Login", "Incorrect password", $"{loginData.Email} could not logged in. Password is incorrect.");
 
             return await LogUserIn(loginData, userInDb.Role);
         }
@@ -60,21 +56,14 @@ namespace ToDoList.Controllers
         [HttpPost]
         public async Task<IActionResult> SignUp(UserModel userModel)
         {
-            var loginData = userModel.LoginData;
+            if (ModelState.IsValid == false)
+                return ViewValidationError("SignUp");
 
-            if (loginData == null)
-                return ViewSignUpWarning("loginData is null.");
-
-            if (string.IsNullOrEmpty(loginData.Email))
-                return ViewSignUpWarning("Email is null or empty.");
-
-            if (string.IsNullOrEmpty(loginData.Password))
-                return ViewSignUpWarning("Password is null or empty.");
-
+            LoginData loginData = userModel.LoginData;
             var userInDb = await _users.GetByEmail(loginData.Email);
 
             if (userInDb != null)
-                return ViewSignUpWarning($"{loginData.Email} could not signed up. User already exists.");
+                return ViewWarning("SignUp", $"{loginData.Email} could not signed up. User already exists.");
 
             userModel.Role = Role.User;
             await _users.AddUser(userModel);
@@ -95,21 +84,25 @@ namespace ToDoList.Controllers
             return View();
         }
 
-        private ViewResult ViewLogInWarning(string message, string? logMessage = null)
+        private ViewResult ViewValidationError(string viewName)
         {
-            if (logMessage != null)
-                _logger.LogWarning(logMessage);
+            string errorMessages = "";
 
-            var loginViewModel = new LoginViewModel { ErrorMessage = message };
-            return View("Login", loginViewModel);
+            foreach (var item in ModelState)
+                if (item.Value.ValidationState == ModelValidationState.Invalid)
+                    foreach (var error in item.Value.Errors)
+                        errorMessages = $"{errorMessages}{error.ErrorMessage}\n";
+
+            return ViewWarning(viewName, errorMessages);
         }
 
-        private ViewResult ViewSignUpWarning(string? logMessage = null)
+        private ViewResult ViewWarning(string viewName, string message, string? logMessage = null)
         {
             if (logMessage != null)
                 _logger.LogWarning(logMessage);
 
-            return View("SignUp");
+            ViewBag.ErrorMessage = message;
+            return View(viewName);
         }
 
         private async Task<IActionResult> LogUserIn(LoginData loginData, string role)

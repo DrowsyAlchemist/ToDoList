@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using ToDoList.DataBase;
 using ToDoList.Logger;
 using ToDoList.Models;
@@ -51,15 +52,39 @@ namespace ToDoList.Controllers
         [Authorize]
         public async Task<IActionResult> Index(UserModel editedUser)
         {
+            if (ModelState.IsValid == false)
+                return ViewValidationError("Index");
+
             try
             {
                 await _users.UpdateUser(editedUser);
+                return LocalRedirect("/Home/Index");
             }
             catch (Exception ex)
             {
                 return RedirectToAction("Index", "Error", new { message = ex.Message, stackTrace = ex.StackTrace });
             }
-            return View(editedUser);
+        }
+
+        private ViewResult ViewValidationError(string viewName)
+        {
+            string errorMessages = "";
+
+            foreach (var item in ModelState)
+                if (item.Value.ValidationState == ModelValidationState.Invalid)
+                    foreach (var error in item.Value.Errors)
+                        errorMessages = $"{errorMessages}{error.ErrorMessage}\n";
+
+            return ViewWarning(viewName, errorMessages);
+        }
+
+        private ViewResult ViewWarning(string viewName, string message, string? logMessage = null)
+        {
+            if (logMessage != null)
+                _logger.LogWarning(logMessage);
+
+            ViewBag.ErrorMessage = message;
+            return View(viewName);
         }
     }
 }

@@ -31,6 +31,7 @@ builder.Services.AddTransient<UserRepository>();
 builder.Services.AddTransient<TaskRepository>();
 builder.Services.AddSingleton<AppLogger>(); // Логгирование
 builder.Services.AddSingleton<TasksOrganizer>();
+builder.Services.AddSingleton<ValidationMessageMaker>();
 
 var app = builder.Build();
 

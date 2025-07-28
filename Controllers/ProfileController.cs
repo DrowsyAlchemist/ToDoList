@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using ToDoList.DataBase;
 using ToDoList.Logger;
 using ToDoList.Models;
+using ToDoList.Services;
 
 namespace ToDoList.Controllers
 {
@@ -11,11 +12,13 @@ namespace ToDoList.Controllers
     {
         private readonly UserRepository _users;
         private readonly AppLogger _logger;
+        private readonly ValidationMessageMaker _validationMessageMaker;
 
-        public ProfileController(UserRepository userRepository, AppLogger logger)
+        public ProfileController(UserRepository userRepository, AppLogger logger, ValidationMessageMaker validationMessageMaker)
         {
             _users = userRepository;
             _logger = logger;
+            _validationMessageMaker = validationMessageMaker;
         }
 
         [Authorize]
@@ -68,13 +71,7 @@ namespace ToDoList.Controllers
 
         private ViewResult ViewValidationError(string viewName)
         {
-            string errorMessages = "";
-
-            foreach (var item in ModelState)
-                if (item.Value.ValidationState == ModelValidationState.Invalid)
-                    foreach (var error in item.Value.Errors)
-                        errorMessages = $"{errorMessages}{error.ErrorMessage}\n";
-
+            string errorMessages = _validationMessageMaker.GetValidationErrorMessage(ModelState);
             return ViewWarning(viewName, errorMessages);
         }
 

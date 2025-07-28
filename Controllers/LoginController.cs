@@ -6,6 +6,7 @@ using ToDoList.Logger;
 using ToDoList.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using ToDoList.Services;
 
 namespace ToDoList.Controllers
 {
@@ -13,14 +14,16 @@ namespace ToDoList.Controllers
     {
         private readonly UserRepository _users;
         private readonly AppLogger _logger;
+        private readonly ValidationMessageMaker _validationMessageMaker;
 
-        public LoginController(UserRepository userRepository, AppLogger logger, ApplicationDbContext db)
+        public LoginController(UserRepository userRepository, AppLogger logger, ApplicationDbContext db, ValidationMessageMaker validationMessageMaker)
         {
             if (db.Users.Any() == false)
                 InitDataBase(db);
 
             _users = userRepository;
             _logger = logger;
+            _validationMessageMaker = validationMessageMaker;
         }
 
         public IActionResult Login()
@@ -86,13 +89,7 @@ namespace ToDoList.Controllers
 
         private ViewResult ViewValidationError(string viewName)
         {
-            string errorMessages = "";
-
-            foreach (var item in ModelState)
-                if (item.Value.ValidationState == ModelValidationState.Invalid)
-                    foreach (var error in item.Value.Errors)
-                        errorMessages = $"{errorMessages}{error.ErrorMessage}\n";
-
+            string errorMessages = _validationMessageMaker.GetValidationErrorMessage(ModelState);
             return ViewWarning(viewName, errorMessages);
         }
 

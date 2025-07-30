@@ -5,7 +5,6 @@ using ToDoList.DataBase;
 using ToDoList.Logger;
 using ToDoList.Models;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using ToDoList.Services;
 
 namespace ToDoList.Controllers

@@ -4,6 +4,7 @@ using ToDoList.DataBase;
 using ToDoList.Infrastructure;
 using ToDoList.Logger;
 using ToDoList.Services;
+using ToDoList.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/login/denyAccess";
     });
 builder.Services.AddAuthorization();
+builder.Services.AddSignalR();
 
 
 builder.Services.AddTransient<UserRepository>();
@@ -47,6 +49,8 @@ else
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Login}/{action=Login}");
+
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();
 

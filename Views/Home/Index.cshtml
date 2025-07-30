@@ -57,5 +57,68 @@
         await Html.RenderPartialAsync("ViewTasks", Model);
     };
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/notificationHub")
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        // Подключаемся к хабу
+        connection.start()
+            .then(() => {
+                console.log("SignalR Connected");
+                // Присоединяемся к группе пользователя
+                connection.invoke("JoinNotificationGroup", "@User.Identity.Name")
+                    .catch(err => console.error(err));
+            })
+            .catch(err => console.error(err.toString()));
+
+        // Обработчик уведомлений
+        connection.on("ReceiveNotification", (message, taskId) => {
+           //  Вариант 1: Браузерные уведомления
+           console.log("ReceiveNotification");
+             if (Notification.permission === "granted") {
+                 new Notification("Напоминание", { body: message });
+             } else if (Notification.permission !== "denied") {
+                 Notification.requestPermission().then(permission => {
+                     if (permission === "granted") {
+                         new Notification("Напоминание", { body: message });
+                     }
+                 });
+             }else {
+                 console.log("denied");
+             }
+
+            // Вариант 2: Toast-уведомление (требует подключения библиотеки, например toastr)
+            // toastr.info(message, 'Новое уведомление', {
+            //     onclick: () => window.location.href = '/Tasks/Details/' + taskId
+            // });
+
+            //Вариант 3: Просто alert
+            //alert(message);
+        });
+
+        // Обработка ошибок подключения
+        connection.onclose(async () => {
+            await startConnection();
+        });
+
+        async function startConnection() {
+            try {
+                await connection.start();
+                console.log("SignalR connection established");
+            } catch (err) {
+                console.log(err);
+                setTimeout(() => startConnection(), 5000);
+            }
+        }
+    });
+
+    setInterval(() => {
+    connection.invoke("Ping");
+}, 30000);
+</script>
 </body>
 </html>

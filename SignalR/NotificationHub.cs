@@ -6,37 +6,34 @@ using System.Security.Claims;
 namespace ToDoList.SignalR
 {
     [Authorize]
-    public class NotificationHub: Hub
+    public class NotificationHub : Hub
     {
-        private static readonly ConcurrentDictionary<string, string> OnlineUsers = new();
+        private static readonly ConcurrentDictionary<string, string> _onlineUsers = new();
 
         public override async Task OnConnectedAsync()
         {
-            var userId = Context.User?.FindFirstValue(ClaimTypes.Name);
-            OnlineUsers.TryAdd(userId, Context.ConnectionId);
+            var userId = Context.User?.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (!string.IsNullOrEmpty(userId))
-            {
-                await Groups.AddToGroupAsync(Context.ConnectionId, userId);
-            }
+            if (string.IsNullOrEmpty(userId))
+                throw new ArgumentNullException(nameof(userId));
+
+            _onlineUsers.TryAdd(userId, Context.ConnectionId);
             await base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
             var userId = Context.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-            OnlineUsers.TryRemove(userId, out _);
+
+            if (string.IsNullOrEmpty(userId) == false)
+                _onlineUsers.TryRemove(userId, out _);
+
             await base.OnDisconnectedAsync(exception);
         }
 
         public bool IsUserOnline(string userId)
         {
-            return OnlineUsers.ContainsKey(userId);
-        }
-
-        public async Task JoinNotificationGroup(string userId)
-        {
-            await Groups.AddToGroupAsync(Context.ConnectionId, userId);
+            return _onlineUsers.ContainsKey(userId);
         }
     }
 }

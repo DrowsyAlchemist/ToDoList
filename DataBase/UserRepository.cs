@@ -15,11 +15,6 @@ namespace ToDoList.DataBase
             _context = context;
         }
 
-        public async Task<UserModel> GetFirst() // Temporary
-        {
-            return await _users.FirstAsync();
-        }
-
         public async Task<UserModel?> GetById(string id)
         {
             ArgumentNullException.ThrowIfNull(id);
@@ -82,6 +77,11 @@ namespace ToDoList.DataBase
             if (userToRemove == null)
                 throw new InvalidOperationException("Пользователь не найден.");
 
+            while (userToRemove.Tasks.Count > 0)
+            {
+                _tasks.Remove(userToRemove.Tasks.First());
+                await _context.SaveChangesAsync();
+            }
             _users.Remove(userToRemove);
             await _context.SaveChangesAsync();
             return userToRemove;

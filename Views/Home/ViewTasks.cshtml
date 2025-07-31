@@ -138,10 +138,10 @@ else
                 @if (Model.UserViewModel.IsUserTasksOwner)
                 {
                     <td>
-                        @Html.ActionLink("Edit", "EditTask", "Home", task)
+                        @Html.ActionLink("Edit", "EditTask", "Task", task)
                     </td>
                     <td>
-                        @Html.ActionLink("Delete", "DeleteTask", "Home", task)
+                        @Html.ActionLink("Delete", "DeleteTask", "Task", task)
                     </td>
                 }
             </tr>

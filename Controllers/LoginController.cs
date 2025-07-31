@@ -106,6 +106,7 @@ namespace ToDoList.Controllers
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, loginData.Email) ,
+                new Claim(ClaimTypes.NameIdentifier, loginData.Email) ,
                 new Claim(ClaimTypes.Role, role),
             };
             // создаем объект ClaimsIdentity

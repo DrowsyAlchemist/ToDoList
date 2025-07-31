@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using ToDoList.DataBase;
 using ToDoList.Logger;
 using ToDoList.Models;
 using ToDoList.Services;
-using ToDoList.SignalR;
 using ToDoList.ViewModels;
 
 namespace ToDoList.Controllers
@@ -15,20 +13,15 @@ namespace ToDoList.Controllers
         private readonly UserRepository _users;
         private readonly AppLogger _logger;
         private readonly TasksOrganizer _tasksOrganizer;
-        private readonly NotificationHub _hubContext;
-        private readonly ValidationMessageMaker _validationMessageMaker;
 
         public HomeController(UserRepository usersRepository,
             AppLogger appLogger,
             TasksOrganizer tasksOrganizer,
-            IHubContext<NotificationHub> hubContext,
-            ValidationMessageMaker validationMessageMaker)
+            TaskNotifier notifier)
         {
             _users = usersRepository;
             _logger = appLogger;
             _tasksOrganizer = tasksOrganizer;
-            _hubContext = hubContext as NotificationHub;
-            _validationMessageMaker = validationMessageMaker;
         }
 
         [Authorize]
@@ -86,103 +79,6 @@ namespace ToDoList.Controllers
             return await Index(organizationInfo, userViewModel);
         }
 
-        [Authorize]
-        public IActionResult EditTask(TaskModel task)
-        {
-            ValidateTask(() => (task == null || string.IsNullOrEmpty(task.Id)));
-            return View(task);
-        }
-
-        [Authorize]
-        public IActionResult CreateTask()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> CreateTask(TaskModel task)
-        {
-            if (ModelState.IsValid == false)
-                return ViewValidationError("CreateTask", task);
-
-            var user = await GetCurrentUser();
-
-            try
-            {
-                await _users.AddTask(task, user);
-                SendNotification(task);
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction("Index", "Error", new { message = ex.Message, stackTrace = ex.StackTrace });
-            }
-            return RedirectToAction("Index");
-        }
-
-        [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> UpdateTask(TaskModel task)
-        {
-            if (ModelState.IsValid == false)
-                return ViewValidationError("EditTask", task);
-
-            await _users.UpdateTask(task);
-            return RedirectToAction("Index");
-        }
-
-        [Authorize]
-        public async Task<IActionResult> DeleteTask(TaskModel task)
-        {
-            ValidateTask(() => (task == null || string.IsNullOrEmpty(task.Id)));
-            await _users.DeleteTask(task);
-            return RedirectToAction("Index");
-        }
-
-        private void SendNotification(TaskModel task)
-        {
-            var delay = task.ExpiresDate - DateTime.Now;
-
-            if (delay > TimeSpan.Zero)
-            {
-                _ = Task.Delay(delay).ContinueWith(async (_) =>
-                 {
-                     if (_hubContext.IsUserOnline(task.User.LoginData.Email))
-                         await SendBrowserNotification(task);
-                     else
-                         SendEmailNotification(task);
-                 });
-            }
-        }
-
-        private async Task SendBrowserNotification(TaskModel task)
-        {
-            await _hubContext.Clients.Group(task.User.LoginData.Email)
-                .SendAsync("ReceiveNotification",
-                $"Время выполнить задачу: {task.Lable}",
-                task.Id);
-        }
-
-        private async Task SendEmailNotification(TaskModel task)
-        {
-            throw new NotImplementedException();
-        }
-
-        private ViewResult ViewValidationError(string viewName, TaskModel task)
-        {
-            string errorMessages = _validationMessageMaker.GetValidationErrorMessage(ModelState);
-            return ViewWarning(viewName, errorMessages, task: task);
-        }
-
-        private ViewResult ViewWarning(string viewName, string message, string? logMessage = null, TaskModel? task = null)
-        {
-            if (logMessage != null)
-                _logger.LogWarning(logMessage);
-
-            ViewBag.ErrorMessage = message;
-            return View(viewName, task);
-        }
-
         private async Task<UserModel> GetCurrentUser()
         {
             var userInApp = HttpContext.User.Identity;
@@ -200,15 +96,6 @@ namespace ToDoList.Controllers
                 throw new InvalidOperationException("UserInDb is null.");
             }
             return userInDb;
-        }
-
-        private void ValidateTask(Func<bool> condition)
-        {
-            if (condition.Invoke())
-            {
-                _logger.LogError("Task is null or incorrect.");
-                throw new ArgumentNullException("Task");
-            }
         }
     }
 }

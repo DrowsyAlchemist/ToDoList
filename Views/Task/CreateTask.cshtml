@@ -5,12 +5,12 @@
     string expiresDate = string.Empty;
     string expiresTime = string.Empty;
 
-   // if (Model.ExpiresDate != null)
-   // {
+    if (Model != null)
+    {
         var date = Model.ExpiresDate;
         expiresDate = date.ToString("yyyy-MM-dd");
         expiresTime = date.ToString("hh:mm");
-  //  }
+    }
 }
 
 <!DOCTYPE html>
@@ -34,10 +34,10 @@
     </style>
 </head>
 <body>
-    <h2 style="display: inline">Меню редактирования</h2>
+    <h2 style="display: inline">Меню создания</h2>
 
-    <form method="post" action="UpdateTask" style="margin:15px 10px">
-        <div>
+    <form method="post" action="CreateTask" style="margin:15px 10px">
+        <div hidden>
             <label>Id:</label><br />
             <input name="id" value="@Model?.Id" /><br />
         </div>
@@ -56,24 +56,16 @@
         </div>
         <div>
             <label>Status:</label><br />
-            @Html.DropDownListFor(m => m.Status, Html.GetEnumSelectList(typeof(ToDoList.Models.TasksStatus)))<br />
+            @Html.DropDownList("status", Html.GetEnumSelectList(typeof(ToDoList.Models.TasksStatus)))<br />
         </div>
         <div>
             <label>Priority:</label><br />
-            @Html.DropDownListFor(m=>m.Priority, Html.GetEnumSelectList(typeof(Priority)))<br />
+            @Html.DropDownList("priority", Html.GetEnumSelectList(typeof(Priority)))<br />
         </div>
         <div>
             <label>Description:</label><br />
-            <input name="description" type="text" value="@Model.Description" />
+            <input name="description" type="text" />
             <br />
-        </div>
-        <div>
-            <label>UserId:</label><br />
-            <input name="UserId" value="@Model?.UserId" /><br />
-        </div>
-        <div>
-            <label>User:</label><br />
-            <input name="User" value="@Model?.User" /><br />
         </div>
         <input type="submit" />
     </form>

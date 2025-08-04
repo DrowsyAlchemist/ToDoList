@@ -16,7 +16,7 @@ namespace ToDoList.Models
         public string? Description { get; set; }
 
         [ValidateNever]
-        public string? UserId {  get; set; }
+        public string? UserId { get; set; }
 
         [ValidateNever]
         public UserModel? User { get; set; }

@@ -7,14 +7,22 @@ namespace ToDoList.Services
     public class TaskNotifier
     {
         private readonly NotificationHub _hubContext;
-        
-        public TaskNotifier(NotificationHub hubContext)
+        private readonly EmailService _emailService;
+
+        public TaskNotifier(NotificationHub hubContext, EmailService emailService)
         {
             _hubContext = hubContext;
+            _emailService = emailService;
         }
 
         public void AddNotification(TaskModel task)
         {
+            ArgumentNullException.ThrowIfNull(task);
+            var taskUser = task.User;
+
+            if (taskUser == null)
+                throw new ArgumentException("User of the task is null or empty.");
+
             var delay = task.ExpiresDate - DateTime.Now;
 
             if (delay > TimeSpan.Zero)
@@ -38,9 +46,14 @@ namespace ToDoList.Services
                 task.Id);
         }
 
-        private async Task SendEmailNotification(TaskModel task)
+        private void SendEmailNotification(TaskModel task)
         {
-            throw new NotImplementedException();
+            _emailService.SendEmail(
+                to: task.User.LoginData.Email, 
+                subject: task.Lable,
+                body: $"Пора бы выполнить задачу: \"{task.Lable}\"" +
+                $"\nОписание задачи: {task.Description}" +
+                $"\nЗадача была запланирована на {task.ExpiresDate}");
         }
     }
 

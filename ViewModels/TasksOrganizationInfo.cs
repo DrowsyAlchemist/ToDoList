@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using ToDoList.Models;
+﻿using ToDoList.Models;
 
 namespace ToDoList.ViewModels
 {

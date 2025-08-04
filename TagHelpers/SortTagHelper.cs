@@ -13,7 +13,7 @@ namespace ToDoList.TagHelpers
         public SortState ThisSortState { get; set; }
         public SortState SelectedSortState { get; set; }
         public string? Action { get; set; }
-        public bool IsAsc {  get; set; }
+        public bool IsAsc { get; set; }
         public Dictionary<string, string> PageUrlValues { get; set; } = new();
 
         [ViewContext]

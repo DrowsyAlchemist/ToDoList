@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using ToDoList.DataBase;
 using ToDoList.Logger;
 using ToDoList.Models;
-using Microsoft.AspNetCore.Authentication;
 using ToDoList.Services;
 
 namespace ToDoList.Controllers

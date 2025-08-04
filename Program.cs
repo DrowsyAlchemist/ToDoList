@@ -29,6 +29,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<NotificationHub>();
 builder.Services.AddSingleton<TaskNotifier>();
+builder.Services.AddSingleton<EmailService>();
 
 
 builder.Services.AddTransient<UserRepository>();

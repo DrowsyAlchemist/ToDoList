@@ -4,7 +4,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 <script>
-    let isConnectionInitialized = false;
+    const receivedNotifications = new Set();
 
     document.addEventListener('DOMContentLoaded', function () {
         const connection = new signalR.HubConnectionBuilder()
@@ -21,11 +21,10 @@
 
         // Логика нотификаций
         connection.on("ReceiveNotification", (message, taskId) => {
-            console.log("ReceiveNotification");
 
-            if (isConnectionInitialized) return;
-
-            isConnectionInitialized = true;
+            console.log("ReceiveNotification: " + message);
+            if (receivedNotifications.has(taskId)) return;
+            receivedNotifications.add(taskId);
 
             // Вариант 1: Браузерные уведомления
             if (Notification.permission === "granted") {
@@ -44,6 +43,7 @@
             // toastr.info(message, 'Новое уведомление', {
             //     onclick: () => window.location.href = '/Tasks/Details/' + taskId
             // });
+            setTimeout(() => receivedNotifications.delete(taskId), 600000);
         });
 
         // Обработка ошибок подключения

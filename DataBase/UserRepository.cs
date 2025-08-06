@@ -125,6 +125,7 @@ namespace ToDoList.DataBase
             var taskToRemove = user.Tasks.FirstOrDefault(t => t.Id == task.Id);
             ArgumentNullException.ThrowIfNull(taskToRemove);
             user.Tasks.Remove(taskToRemove);
+            _tasks.Remove(taskToRemove);
             await _context.SaveChangesAsync();
             return task;
         }

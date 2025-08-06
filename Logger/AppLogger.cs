@@ -13,7 +13,7 @@ namespace ToDoList.Logger
 
         public void LogInfo(string message, [CallerFilePath] string caller = "")
         {
-            GetLogger(caller).LogInformation(message);
+            GetLogger(caller).LogInformation($"[{DateTime.Now.ToLongTimeString()}]"+message);
         }
 
         public void LogWarning(string message, [CallerFilePath] string caller = "")
